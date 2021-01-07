@@ -1,4 +1,7 @@
 <div class="container">
     <h1 class="m-3 text-center">Welcome to Amazon Dashboard</h1>
-    <p class="m-3 text-center">You must sign in to continue</p>
+    <% if user_signed_in? %>
+    <% else %>
+        <p class="m-3 text-center">You must sign in to continue</p>
+    <% end %>
 </div>
