@@ -24,24 +24,10 @@ default: &default
 development:
   <<: *default
   database: amazon_dashboard_development
-
-  # The specified database role being used to connect to postgres.
-  # To create additional roles in postgres see `$ createuser --help`.
-  # When left blank, postgres will use the default role. This is
-  # the same name as the operating system user that initialized the database.
-  #username: amazon_dashboard
-
-  # The password associated with the postgres role (username).
-  #password:
-
-  # Connect on a TCP socket. Omitted by default since the client uses a
-  # domain socket that doesn't need configuration. Windows does not have
-  # domain sockets, so uncomment these lines.
-  #host: localhost
-
-  # The TCP port the server listens on. Defaults to 5432.
-  # If your server runs on a different port number, change accordingly.
-  #port: 5432
+  username: rails
+  password: tester12
+  host: localhost
+  port: 5432
 
   # Schema search path. The server defaults to $user,public
   #schema_search_path: myapp,sharedapp,public
@@ -58,9 +44,12 @@ development:
 test:
   <<: *default
   database: amazon_dashboard_test
-
-# As with config/credentials.yml, you never want to store sensitive information,
+  username: rails
+  password: tester12
+  host: localhost
+  port: 5432
 # like your database password, in your source code. If your source code is
+# As with config/credentials.yml, you never want to store sensitive information,
 # ever seen by anyone, they now have access to your database.
 #
 # Instead, provide the password as a unix environment variable when you boot
@@ -78,8 +67,9 @@ test:
 #   production:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
-production:
-  <<: *default
-  database: amazon_dashboard_production
-  username: amazon_dashboard
-  password: <%= ENV['AMAZON_DASHBOARD_DATABASE_PASSWORD'] %>
+# Don't need this if it's Heroku
+#production:
+#  <<: *default
+#  database: amazon_dashboard_production
+#  username: amazon_dashboard
+#  password: <%= ENV['AMAZON_DASHBOARD_DATABASE_PASSWORD'] %>
