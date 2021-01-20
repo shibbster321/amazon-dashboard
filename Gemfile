@@ -21,7 +21,7 @@ gem 'webpacker', '~> 4.0'
 
 group :development, :test do  gem 'pry-byebug'
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
-  gem 'dotenv-rails'
+  gem 'dotenv-rails', groups: [:development, :test]
   gem 'pry-rails'
 end
 
