@@ -25,7 +25,7 @@ development:
   <<: *default
   database: amazon_dashboard_development
   username: cameronbrock
-  password: copper09
+  password: postgres_pw
   host: localhost
   port: 5432
 
