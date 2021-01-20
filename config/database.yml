@@ -24,8 +24,8 @@ default: &default
 development:
   <<: *default
   database: amazon_dashboard_development
-  username: rails
-  password: tester12
+  username: cameronbrock
+  password: copper09
   host: localhost
   port: 5432
 
