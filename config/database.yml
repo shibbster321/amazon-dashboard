@@ -25,7 +25,7 @@ development:
   <<: *default
   database: amazon_dashboard_development
   username: cameronbrock
-  password: postgres_pw
+  password: asdfASDF
   host: localhost
   port: 5432
 
@@ -68,8 +68,8 @@ test:
 #     url: <%= ENV['DATABASE_URL'] %>
 #
 # Don't need this if it's Heroku
-#production:
-#  <<: *default
-#  database: amazon_dashboard_production
-#  username: amazon_dashboard
-#  password: <%= ENV['AMAZON_DASHBOARD_DATABASE_PASSWORD'] %>
+production:
+ <<: *default
+ database: cam-amzn-dashboard_production
+ username: cam-amzn-dashboard
+ password: <%= ENV['AMAZON_DASHBOARD_DATABASE_PASSWORD'] %>
