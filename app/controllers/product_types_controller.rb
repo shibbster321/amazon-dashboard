@@ -18,23 +18,39 @@ class ProductTypesController < ApplicationController
   end
 
   def show
+    @product_type = find_product_type_instance
+    @products = @product_type.products
   end
 
   def edit
+    @product_type = ProductType.find(params[:id])
+
   end
 
   def update
+    @product_type = ProductType.find(params[:id])
+    if @product_type.update(product_type_params)
+      redirect_to product_types_path, notice: 'Parent product was successfully updated.'
+    else
+      render :edit
+    end
   end
 
   def destroy
+    @product_type = ProductType.find(params[:id])
+    if @product_type.destroy
+      redirect_to product_types_path, notice: 'Parent product was successfully deleted.'
+    else
+      render :show, notice: 'There was problem deleting this item.'
+    end
   end
 
   private
   def find_product_type_instance
-    @product_type = product_type.find(params[:id])
+    @product_type = ProductType.find(params[:id])
   end
 
   def product_type_params
-    params.require(:product_type).permit(:title)
+    params.require(:product_type).permit(:title, :photo)
   end
 end

@@ -1,2 +1,17 @@
-<h1>Product#edit</h1>
-<p>Find me in app/views/product/edit.html.erb</p>
+<div class="container w-50">
+<p> Edit Child Product Information </p>
+  <%= simple_form_for [@product_type, @product] do |f| %>
+    <%= f.input :title %>
+    <%= f.input :asin %>
+    <%= f.input :color_size %>
+    <%= f.input :description %>
+    <%= f.input :sku %>
+    <%= f.input :photo, as: :file %>
+    <%= f.submit "Finished", class: "btn btn-secondary" %>
+    <%= f.submit "Add another", class: "btn btn-primary" %>
+  <% end %>
+  <%= link_to 'Back', @product_type %>
+
+</div>
+
+

@@ -1,0 +1,9 @@
+.table {
+  background-color: white;
+
+  & th, td {
+    vertical-align: middle;
+    text-align: left;
+  }
+
+}

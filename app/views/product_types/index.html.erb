@@ -4,21 +4,31 @@
   <table class="table my-2">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Image</th>
+      <th class="text-center" scope="col">#</th>
+      <th class="text-center" scope="col">Image</th>
       <th scope="col">Title</th>
+      <th scope="col"> Children</th>
+      <th scope="col"> edit</th>
     </tr>
   </thead>
   <tbody>
-    <tr>
     <% i = 0 %>
-      <% @product_types.each do |item| %>
+    <% @product_types.each do |item| %>
+      <tr>
       <% i += 1 %>
-        <th scope="row">i</th>
-        <td>image</td>
+        <th class="text-center" scope="row"><%= i %></th>
+        <td class="text-center">
+          <% if item.photo.attached? %>
+            <%= cl_image_tag item.photo.key, class: "icon-square" %>
+          <% else %>
+            <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
+          <% end %>
+        </td>
         <td><%= item.title %></td>
-      <% end %>
-    </tr>
+        <td><%= link_to "See Children", product_type_path(item), class: "btn btn-info" %> </td>
+        <td><%= link_to "edit", edit_product_type_path(item), class: " text-small btn-edit" %> / <%= link_to 'delete',product_type_path({:id => item.id}),method: :delete, data: {confirm: "Are you sure you want to delete this??"} %></td>
+      </tr>
+    <% end %>
   </tbody>
 </table>
 

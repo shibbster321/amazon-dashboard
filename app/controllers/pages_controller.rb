@@ -3,4 +3,8 @@ class PagesController < ApplicationController
 
   def home
   end
+
+  def inventory
+    @product_types = ProductType.all
+  end
 end
