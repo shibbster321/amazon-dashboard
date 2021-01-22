@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start": "node index.js"
+  },
+
   "name": "amazon_dashboard",
   "private": true,
   "dependencies": {
