@@ -24,10 +24,10 @@ default: &default
 development:
   <<: *default
   database: amazon_dashboard_development
-  username: cameronbrock
-  password: copper09
-  host: localhost
-  port: 5432
+  # username: cameronbrock
+  # password: copper09
+  # host: localhost
+  # port: 5432
 
   # Schema search path. The server defaults to $user,public
   #schema_search_path: myapp,sharedapp,public
@@ -70,6 +70,6 @@ test:
 # Don't need this if it's Heroku
 production:
  <<: *default
- database: cam-amzn-dashboard_production
- username: cam-amzn-dashboard
+ database: amazon_dashboard_production
+ username: amazon_dashboard
  password: <%= ENV['AMAZON_DASHBOARD_DATABASE_PASSWORD'] %>

@@ -1,6 +1,7 @@
 class ProductTypesController < ApplicationController
   def index
-    @product_types = ProductType.all
+    @product_types = ProductType.order(params[:sort])
+
   end
 
   def new

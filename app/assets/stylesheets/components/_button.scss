@@ -25,3 +25,18 @@
     color: rgb(107, 37, 37);
   }
 }
+
+
+.btn-clear {
+  color: $dark;
+  font-size: smaller;
+  text-decoration: none;
+  padding: 4px;
+  border: solid 1px $dark;
+
+    &:hover {
+    color: rgba(100, 100, 100, .7);
+    border: solid 1px rgba(100, 100, 100, .7);
+    text-decoration: none;
+  }
+}

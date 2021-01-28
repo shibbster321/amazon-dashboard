@@ -33,7 +33,7 @@ class ProductsController < ApplicationController
     @product_type = ProductType.find(params[:product_type_id])
      @product =Product.find(params[:id])
     if @product.update(product_params)
-      redirect_to product_type_product_path(@product_type), notice: 'Product was successfully updated.'
+      redirect_to product_type_path(@product_type), notice: 'Product was successfully updated.'
     else
       render :edit
     end

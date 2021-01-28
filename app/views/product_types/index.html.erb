@@ -1,12 +1,14 @@
 <div class="container">
-  <h1>Parent Products</h1>
-  <%= link_to "Add New", new_product_type_path, class: "btn btn-secondary" %>
+  <div class="d-flex align-items-center">
+    <h1>Parent Products</h1>
+    <%= link_to "Add New", new_product_type_path, class: "ml-3  btn-clear btn" %>
+  </div>
   <table class="table my-2">
   <thead>
     <tr>
       <th class="text-center" scope="col">#</th>
       <th class="text-center" scope="col">Image</th>
-      <th scope="col">Title</th>
+      <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "title"%> <p class="carrot">▽</p></div> </th>
       <th scope="col"> Children</th>
       <th scope="col"> edit</th>
     </tr>
