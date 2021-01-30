@@ -1,0 +1,58 @@
+<div class="container">
+  <div class="d-flex">
+    <div class="container">
+      <h1>inventory Index</h1>
+      <p class="font-italic text-gray">updated: <%= Inventory.recent.first.date.strftime("%b %d, %Y")  %></p>
+    </div>
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Choose Parent Product
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+      <a class="dropdown-item" <%= link_to "All", inventories_path %> </a>
+        <% @parentlist.each do |ptype|%>
+          <a class="dropdown-item" <%= link_to ptype.title, inventory_path(ptype.id) %></a>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  <table class="table my-2">
+    <thead>
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th class="text-center" scope="col">Image</th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Supply Days", :sort => "supply_days"%> <p class="carrot">▽</p></div> </th>
+        <th scope="col"> available</th>
+        <th scope="col"> inbound</th>
+        <th scope="col"> unavailable</th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Total", :sort => "total"%> <p class="carrot">▽</p></div> </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% i = 0 %>
+      <% @inventories.each do |inventory| %>
+        <tr>
+        <% i += 1 %>
+          <th class="text-center" scope="row"><%= i %></th>
+          <td class="text-center photo">
+            <% if inventory.product.photo.attached? %>
+              <%= cl_image_tag inventory.product.photo.key, class: "icon-square" %>
+            <% else %>
+              <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
+            <% end %>
+          </td>
+          <td><%= inventory.product.title %> - <%= inventory.product.color_size %></td>
+          <td class= <%= if inventory.supply_days<=30 then "bg-red" else "" end %>>
+            <%= inventory.supply_days %>
+          </td>
+          <td><%= inventory.available %></td>
+          <td><%= inventory.inbound %></td>
+          <td><%= inventory.processing %></td>
+          <td><%= inventory.total %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+

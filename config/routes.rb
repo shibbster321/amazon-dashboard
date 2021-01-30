@@ -7,6 +7,6 @@ Rails.application.routes.draw do
     resources :products
   end
 
-  resources :inventorys, only: [:show, :index]
+  resources :inventories, only: [:index, :show]
 
 end
