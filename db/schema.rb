@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_01_30_095642) do
+ActiveRecord::Schema.define(version: 2021_01_31_150215) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -73,6 +73,23 @@ ActiveRecord::Schema.define(version: 2021_01_30_095642) do
     t.index ["product_type_id"], name: "index_products_on_product_type_id"
   end
 
+  create_table "sales", force: :cascade do |t|
+    t.datetime "date"
+    t.bigint "product_id", null: false
+    t.bigint "product_type_id", null: false
+    t.string "sku"
+    t.string "orderid"
+    t.integer "qty"
+    t.float "sale_amt"
+    t.float "selling_fee"
+    t.float "fba_fee"
+    t.float "total"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["product_id"], name: "index_sales_on_product_id"
+    t.index ["product_type_id"], name: "index_sales_on_product_type_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -89,4 +106,6 @@ ActiveRecord::Schema.define(version: 2021_01_30_095642) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "inventories", "products"
   add_foreign_key "products", "product_types"
+  add_foreign_key "sales", "product_types"
+  add_foreign_key "sales", "products"
 end

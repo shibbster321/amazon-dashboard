@@ -5,7 +5,10 @@ class InventoriesController < ApplicationController
     @inventories = Inventory.recent.order(params[:sort])
     @product_type = ProductType.all
 
-
+    @bar_data = []
+    @inventories.each do |item|
+      @bar_data << ["#{item.product.title}-#{item.product.color_size}", item.supply_days]
+    end
   end
 
   def show
@@ -14,6 +17,10 @@ class InventoriesController < ApplicationController
     children = Product.where(product_type_id: product_type.id).ids
     @inventories = Inventory.recent.where(product_id: children).order(params[:sort])
 
+    @bar_data = []
+    @inventories.each do |item|
+      @bar_data << ["#{item.product.color_size}", item.supply_days]
+    end
   end
 
   private

@@ -8,5 +8,5 @@ Rails.application.routes.draw do
   end
 
   resources :inventories, only: [:index, :show]
-
+  resource :sale, only: [:show]
 end
