@@ -1,8 +1,38 @@
 <div class="container">
   <h1 class="m-3 text-center">Welcome to Amazon Dashboard</h1>
   <% if user_signed_in? %>
+    <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @last_month.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+    <%= area_chart Sale.group_by_week(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @last_year.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+    <table class="table my-2">
+      <thead>
+        <tr>
+          <th class="text-center" scope="col">#</th>
+          <th class="text-center" scope="col">Image</th>
+          <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
+          <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
+        </tr>
+      </thead>
+      <tbody>
+        <% i = 0 %>
+        <% @sales.each do |sale| %>
+          <tr>
+          <% i += 1 %>
+            <th class="text-center" scope="row"><%= i %></th>
+            <td class="text-center photo">
+              <% if sale.product.photo.attached? %>
+                <%= cl_image_tag sale.product.photo.key, class: "icon-square" %>
+              <% else %>
+                <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
+              <% end %>
+            </td>
+            <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+            <td><%= sale.sale_amt %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   <% else %>
       <p class="m-3 text-center">You must sign in to continue</p>
   <% end %>
-  <%= area_chart Sale.group_by_day(:date, format: "%d").sum(:sale_amt) %>
+
 </div>

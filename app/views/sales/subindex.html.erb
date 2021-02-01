@@ -1,0 +1,32 @@
+<div class="container">
+  <h1>Sales subindex page by by product Type</h1>
+
+  <table class="table my-2">
+    <thead>
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th class="text-center" scope="col">Image</th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% i = 0 %>
+      <% @this_month_sales.each do |sale| %>
+        <tr>
+        <% i += 1 %>
+          <th class="text-center" scope="row"><%= i %></th>
+          <td class="text-center photo">
+            <% if sale.product.photo.attached? %>
+              <%= cl_image_tag sale.product.photo.key, class: "icon-square" %>
+            <% else %>
+              <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
+            <% end %>
+          </td>
+          <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+          <td><%= sale.sale_amt %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

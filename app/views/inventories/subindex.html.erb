@@ -11,7 +11,7 @@
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton value">
       <a class="dropdown-item" <%= link_to "All", inventories_path %> </a>
         <% @parentlist.each do |ptype|%>
-          <a class="dropdown-item" <%= link_to ptype.title, inventory_path(ptype.id) %></a>
+          <a class="dropdown-item" <%= link_to ptype.title, product_type_inventories_path(ptype.id) %></a>
         <% end %>
       </div>
     </div>
