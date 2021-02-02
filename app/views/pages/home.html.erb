@@ -1,8 +1,29 @@
 <div class="container">
   <h1 class="m-3 text-center">Welcome to Amazon Dashboard</h1>
   <% if user_signed_in? %>
-    <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @last_month.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
-    <%= area_chart Sale.group_by_week(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @last_year.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+  <div class="container row">
+    <div label="graph" class="container big-card col-9 rounded p-1">
+      <div aria="buttons" class="container d-flex flex-row-reverse">
+        <%= link_to "Year", {:range => "year"}, class: "btn-toggle btn-clear rounded mx-1" %>
+        <%= link_to "Month", {:range => "month"}, class: "btn-toggle btn-clear rounded" %>
+      </div>
+      <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @date_range .strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+    </div>
+    <div label="stats container" class="container col-3 ">
+      <div class="big-card mb-3 ">
+        <h5> Weekly Sales: </h5>
+        <h5>Last Week Sales: </h5>
+      </div>
+      <div label="warning" class="big-card">
+        <h5>Warning</h5>
+      </div>
+    </div>
+  </div>
+  <div label="ptype graph" class="big-card mt-3">
+    <%= line_chart @product_type_sales.map { |product_type|
+      {name: product_type.title, data: product_type.sales.group_by_week(:date).sum(:sale_amt)}
+    } , xmin: @date_range .strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+  </div>
     <table class="table my-2">
       <thead>
         <tr>

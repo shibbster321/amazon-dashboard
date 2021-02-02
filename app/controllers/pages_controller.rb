@@ -8,9 +8,13 @@ class PagesController < ApplicationController
     @sales = Sale.order(params[:sort])
 
     @most_recent_date = Sale.maximum('date')
-    @last_month = @most_recent_date - 30.days
-    @last_year = @most_recent_date - 1.year
-
+    @date_range = @most_recent_date - 30.days
+    if params[:range] == "year"
+      @date_range = @most_recent_date - 1.year
+    elsif params[:range] != "year"
+      @date_range = @most_recent_date - 30.days
+    end
+    @product_type_sales = ProductType.where(id: Sale.distinct.pluck(:product_type_id))
     @this_month_sales = Sale.thismonth
     # @bar_data = []
     # @inventories.each do |item|

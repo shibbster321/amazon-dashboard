@@ -10,3 +10,9 @@ p {
 .bg-red{
   background-color: $red-bg;
 }
+
+.big-card {
+  background-color: white;
+  border-radius: $border-radius;
+  padding: 8px;
+}

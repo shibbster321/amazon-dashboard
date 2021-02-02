@@ -1,0 +1,11 @@
+  $jsonData = [
+              "grant_type" => "refresh_token",
+              "client_id" => $this->lwaClientId,
+              "client_secret" => $this->lwaClientSecret,
+              "refresh_token" => "<your refresh token>"
+          ];
+
+
+          $res = $this->client->post("https://api.amazon.com/auth/o2/token", [
+              \GuzzleHttp\RequestOptions::JSON => $jsonData,
+          ]);

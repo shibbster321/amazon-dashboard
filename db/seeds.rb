@@ -64,8 +64,8 @@ puts "destryed sale seeds"
 table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'sales_data.csv')), headers: true)
 # Create sale events
 table.each do |row|
-  if row['Type'] == "Order"
-    new = Sale.new({date: row[0].to_time, orderid: row[3], sku: row[4].to_s, qty: row[6].to_i, sale_amt: row[14].to_i, selling_fee: row[23].to_f, fba_fee: row[24].to_f, total: row[27].to_f})
+  if row['type'] == "Order"
+    new = Sale.new({date: row[0].to_time, orderid: row['order id'], sku: row['sku'].to_s, qty: row['quantity'].to_i, sale_amt: row['product sales'].to_i, selling_fee: row['selling fees'].to_f, fba_fee: row['fba fees'].to_f, total: row['total'].to_f})
     if Product.find_by(sku: new.sku)
       product = Product.find_by(sku: new.sku)
       new.product_id = product.id
