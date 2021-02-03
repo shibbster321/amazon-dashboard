@@ -40,10 +40,13 @@
     text-decoration: none;
   }
 }
-.btn-toggle {
 
+.btn-toggle {
   &:active {
-    font-weight: bold;
+    background-color: rgba(100, 100, 100, 0.2);
+    color: black;
+    border-color: black;
+    box-shadow: 2px 2px 2px rgba(100, 100, 100, 0.2);
   }
 }
 

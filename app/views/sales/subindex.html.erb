@@ -1,6 +1,40 @@
 <div class="container">
   <h1>Sales subindex page by by product Type</h1>
-
+  <div label="first-row" class="row">
+    <div label="graph" class="container big-card col-9 rounded p-1">
+      <div id="toggle-div" class="container d-flex flex-row-reverse p-0">
+        <%= link_to "Year", {:range => "year"}, class: "btn-toggle btn-clear rounded mx-1" %>
+        <%= link_to "Month", {:range => "month"}, class: "btn-toggle btn-clear rounded" %>
+      </div>
+      <%= area_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+    </div>
+    <div label="stats container" class="container col-3 ">
+      <div class="big-card mb-3 ">
+        <h5> Weekly Sales: </h5>
+        <h5>Last Week Sales: </h5>
+      </div>
+      <div label="warning" class="big-card">
+        <h5>Warning</h5>
+      </div>
+    </div>
+  </div>
+  <div label="second-row" class="row mt-3">
+    <div label="ptype graph" class="big-card col-9 ">
+      <%= line_chart @product_sales_list.map { |product|
+        {name: product.color_size, data: product.sales.group_by_week(:date).sum(:sale_amt)}
+      } ,xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
+    </div>
+    <div class="container col-3">
+      <div class="big-card" >
+        <h5 class="text-center">Choose Product</h5>
+        <div class="list-group">
+          <% @dropdown_list.each do |product|%>
+            <%= link_to product.color_size, product_type_sales_path(product.id), class: "list-group-item list-group-item-action" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
   <table class="table my-2">
     <thead>
       <tr>
@@ -12,21 +46,17 @@
     </thead>
     <tbody>
       <% i = 0 %>
-      <% @this_month_sales.each do |sale| %>
+      <% @all_sales.each do |sale| %>
         <tr>
         <% i += 1 %>
           <th class="text-center" scope="row"><%= i %></th>
-          <td class="text-center photo">
-            <% if sale.product.photo.attached? %>
-              <%= cl_image_tag sale.product.photo.key, class: "icon-square" %>
-            <% else %>
-              <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
-            <% end %>
-          </td>
-          <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
-          <td><%= sale.sale_amt %></td>
+          <td class="text-center"> <%= sale.date.strftime("%b. %d, %Y") %></td>
+          <td><%= link_to sale.product.color_size, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+          <td>$<%= sale.sale_amt %>0</td>
         </tr>
       <% end %>
+      <tr> <th class="text-center">...</th><td class="text-center">...</td><td>...</td><td>...</td> </tr>
     </tbody>
   </table>
+
 </div>

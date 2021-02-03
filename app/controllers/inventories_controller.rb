@@ -1,7 +1,7 @@
 class InventoriesController < ApplicationController
 
   def index
-    @parentlist = ProductType.all
+    @dropdown_list = ProductType.all
     @inventories = Inventory.recent.order(params[:sort])
     @product_type = ProductType.all
 

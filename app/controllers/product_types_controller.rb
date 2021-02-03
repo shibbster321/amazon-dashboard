@@ -52,6 +52,6 @@ class ProductTypesController < ApplicationController
   end
 
   def product_type_params
-    params.require(:product_type).permit(:title, :photo)
+    params.require(:product_type).permit(:title, :lead_time, :photo)
   end
 end

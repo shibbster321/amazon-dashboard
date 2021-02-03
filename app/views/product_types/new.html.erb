@@ -3,6 +3,7 @@
 <p> Enter Product Parent Name </p>
   <%= simple_form_for(@product_type) do |f| %>
     <%= f.input :title %>
+    <%= f.input :lead_time %>
     <%= f.input :photo, as: :file %>
     <%= f.submit "Next", class: "btn btn-primary" %>
   <% end %>

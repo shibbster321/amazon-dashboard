@@ -9,10 +9,10 @@
         Filter by Parent
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton value">
-      <a class="dropdown-item" <%= link_to "All", inventories_path %> </a>
-        <% @parentlist.each do |ptype|%>
-          <a class="dropdown-item" <%= link_to ptype.title, product_type_inventories_path(ptype.id) %></a>
-        <% end %>
+        <a class="dropdown-item" <%= link_to "All", inventories_path %> </a>
+          <% @dropdown_list.each do |ptype|%>
+            <a class="dropdown-item" <%= link_to ptype.title, product_type_inventories_path(ptype.id) %></a>
+          <% end %>
       </div>
     </div>
   </div>
@@ -46,7 +46,7 @@
             <% end %>
           </td>
           <td><%= link_to inventory.product.title, product_type_inventories_path(inventory.product.product_type_id), class: "btn-simple" %> - <%= inventory.product.color_size %></td>
-          <td class= <%= if inventory.supply_days<=30 then "bg-red" else "" end %>>
+          <td class= <%= if inventory.supply_days<= inventory.product.product_type.lead_time then "bg-red" else "" end %>>
             <%= inventory.supply_days %>
           </td>
           <td><%= inventory.available %></td>

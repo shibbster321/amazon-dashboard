@@ -1,13 +1,13 @@
 <div class="container">
   <h1 class="m-3 text-center">Welcome to Amazon Dashboard</h1>
   <% if user_signed_in? %>
-  <div class="container row">
+  <div label="first-row" class="row">
     <div label="graph" class="container big-card col-9 rounded p-1">
-      <div aria="buttons" class="container d-flex flex-row-reverse">
+      <div id="toggle-div" class="container d-flex flex-row-reverse p-0">
         <%= link_to "Year", {:range => "year"}, class: "btn-toggle btn-clear rounded mx-1" %>
         <%= link_to "Month", {:range => "month"}, class: "btn-toggle btn-clear rounded" %>
       </div>
-      <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @date_range .strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+      <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
     </div>
     <div label="stats container" class="container col-3 ">
       <div class="big-card mb-3 ">
@@ -19,41 +19,47 @@
       </div>
     </div>
   </div>
-  <div label="ptype graph" class="big-card mt-3">
-    <%= line_chart @product_type_sales.map { |product_type|
-      {name: product_type.title, data: product_type.sales.group_by_week(:date).sum(:sale_amt)}
-    } , xmin: @date_range .strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
-  </div>
-    <table class="table my-2">
-      <thead>
-        <tr>
-          <th class="text-center" scope="col">#</th>
-          <th class="text-center" scope="col">Image</th>
-          <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
-          <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
-        </tr>
-      </thead>
-      <tbody>
-        <% i = 0 %>
-        <% @sales.each do |sale| %>
-          <tr>
-          <% i += 1 %>
-            <th class="text-center" scope="row"><%= i %></th>
-            <td class="text-center photo">
-              <% if sale.product.photo.attached? %>
-                <%= cl_image_tag sale.product.photo.key, class: "icon-square" %>
-              <% else %>
-                <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
-              <% end %>
-            </td>
-            <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
-            <td><%= sale.sale_amt %></td>
-          </tr>
+  <div label="second-row" class="row mt-3">
+    <div label="ptype graph" class="big-card col-9 ">
+      <%= line_chart @product_type_sales_list.map { |product_type|
+        {name: product_type.title, data: product_type.sales.group_by_week(:date).sum(:sale_amt)}
+      } ,xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
+    </div>
+    <div class="container col-3">
+      <div class="big-card" >
+      <h5 class="text-center">Choose Product</h5>
+      <div class="list-group">
+        <% @dropdown_list.each do |ptype|%>
+          <%= link_to ptype.title, product_type_sales_path(ptype.id), class: "list-group-item list-group-item-action" %>
         <% end %>
-      </tbody>
-    </table>
+      </div>
+      </div>
+    </div>
+  </div>
+  <table class="table my-2">
+    <thead>
+      <tr>
+        <th class="text-center" scope="col">#</th>
+        <th class="text-center" scope="col">Image</th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
+      </tr>
+    </thead>
+    <tbody>
+      <% i = 0 %>
+      <% @all_sales.each do |sale| %>
+        <tr>
+        <% i += 1 %>
+          <th class="text-center" scope="row"><%= i %></th>
+          <td class="text-center"> <%= sale.date.strftime("%b. %d, %Y") %></td>
+          <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+          <td>$<%= sale.sale_amt %>0</td>
+        </tr>
+      <% end %>
+      <tr> <th class="text-center">...</th><td class="text-center">...</td><td>...</td><td>...</td> </tr>
+    </tbody>
+  </table>
   <% else %>
       <p class="m-3 text-center">You must sign in to continue</p>
   <% end %>
-
 </div>
