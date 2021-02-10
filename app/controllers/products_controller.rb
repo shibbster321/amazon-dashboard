@@ -1,14 +1,18 @@
 class ProductsController < ApplicationController
+  after_action :verify_authorized, only: [:index, :new, :create, :edit, :update, :destroy]
+  skip_after_action :verify_policy_scoped, only: :index
   def index
   end
 
   def new
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
     @product = Product.new
 
   end
 
   def create
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
     @product = Product.new(product_params)
     @product.product_type_id = @product_type.id
@@ -20,16 +24,19 @@ class ProductsController < ApplicationController
   end
 
   def show
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
     @products = @product_type.products
   end
 
   def edit
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
     @product =Product.find(params[:id])
   end
 
   def update
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
      @product =Product.find(params[:id])
     if @product.update(product_params)
@@ -40,6 +47,7 @@ class ProductsController < ApplicationController
   end
 
   def destroy
+    authorize Product
     @product_type = ProductType.find(params[:product_type_id])
      @product =Product.find(params[:id])
     if @product.destroy

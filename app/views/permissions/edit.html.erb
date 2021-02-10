@@ -1,0 +1,9 @@
+<div class="container w-50">
+  <p> Edit User Permissions for: <%= @user.email %> </p>
+  <%= simple_form_for(@user, url: permission_path, :method => :patch) do |f| %>
+    <%= f.input :name %>
+    <%= f.input :status %>
+    <%= f.submit "Finished", class: "btn btn-secondary" %>
+  <% end %>
+  <%= link_to 'Back', permissions_path %>
+</div>

@@ -1,6 +1,8 @@
 class InventoriesController < ApplicationController
-
+  after_action :verify_authorized, only: [:index, :subindex]
+  skip_after_action :verify_policy_scoped, only: :index
   def index
+    authorize Inventory
     @dropdown_list = ProductType.all
     @inventories = Inventory.recent.order(params[:sort])
     @product_type = ProductType.all
@@ -12,6 +14,7 @@ class InventoriesController < ApplicationController
   end
 
   def subindex
+    authorize Inventory
     @parentlist = ProductType.all
     product_type = ProductType.find(params[:product_type_id])
     children = Product.where(product_type_id: product_type.id).ids

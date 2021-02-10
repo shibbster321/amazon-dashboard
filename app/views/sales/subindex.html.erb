@@ -1,8 +1,15 @@
 <div class="container">
-  <h1>Sales subindex page by by product Type</h1>
-  <div label="first-row" class="row">
+<div class="d-flex align-items-center mb-2">
+   <% if @product_type.photo.attached? %>
+      <%= cl_image_tag @product_type.photo.key, class: "icon-large" %>
+    <% else %>
+      <%= image_tag "no_image_avail.jpg", class: "icon-large" %>
+    <% end %>
+  <h1 class="">Sales for <%= @product_type.title %></h1>
+</div>
+  <div label="first-row" class="row ml-0">
     <div label="graph" class="container big-card col-9 rounded p-1">
-      <div id="toggle-div" class="container d-flex flex-row-reverse p-0">
+      <div id="toggle-div" class="container d-flex flex- ml-0-reverse p-0">
         <%= link_to "Year", {:range => "year"}, class: "btn-toggle btn-clear rounded mx-1" %>
         <%= link_to "Month", {:range => "month"}, class: "btn-toggle btn-clear rounded" %>
       </div>
@@ -18,7 +25,7 @@
       </div>
     </div>
   </div>
-  <div label="second-row" class="row mt-3">
+  <div label="second-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
       <%= line_chart @product_sales_list.map { |product|
         {name: product.color_size, data: product.sales.group_by_week(:date).sum(:sale_amt)}
@@ -29,7 +36,7 @@
         <h5 class="text-center">Choose Product</h5>
         <div class="list-group">
           <% @dropdown_list.each do |product|%>
-            <%= link_to product.color_size, product_type_sales_path(product.id), class: "list-group-item list-group-item-action" %>
+            <p class="list-group-item list-group-item-action"><%=product.color_size%> </p>
           <% end %>
         </div>
       </div>
@@ -39,7 +46,7 @@
     <thead>
       <tr>
         <th class="text-center" scope="col">#</th>
-        <th class="text-center" scope="col">Image</th>
+        <th class="text-center" scope="col">Date</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
       </tr>
