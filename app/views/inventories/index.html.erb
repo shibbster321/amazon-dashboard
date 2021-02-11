@@ -1,7 +1,7 @@
 <div class="container">
   <div class="d-flex">
     <div class="container">
-      <h1>inventory Index</h1>
+      <h1>All Inventory</h1>
       <p class="font-italic text-gray">updated: <%= Inventory.recent.first.date.strftime("%b %d, %Y")  %></p>
     </div>
     <div class="dropdown">
@@ -17,7 +17,9 @@
     </div>
   </div>
 
-<%= column_chart(@bar_data) %>
+  <div class="big-card">
+    <%= column_chart @bar_data, title: "Supply Days" %>
+  </div>
 
   <table class="table my-2">
     <thead>

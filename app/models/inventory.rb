@@ -1,5 +1,6 @@
 class Inventory < ApplicationRecord
   belongs_to :product
+  belongs_to :product_type
 
   validates_uniqueness_of :date, scope: :asin
 

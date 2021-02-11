@@ -1,53 +1,67 @@
 <div class="container">
-<div class="d-flex align-items-center mb-2">
-   <% if @product_type.photo.attached? %>
-      <%= cl_image_tag @product_type.photo.key, class: "icon-large" %>
-    <% else %>
-      <%= image_tag "no_image_avail.jpg", class: "icon-large" %>
-    <% end %>
-  <h1 class="">Sales for <%= @product_type.title %></h1>
-</div>
+  <div class="d-flex align-items-center mb-2">
+    <% if @product_type.photo.attached? %>
+        <%= cl_image_tag @product_type.photo.key, class: "icon-large" %>
+      <% else %>
+        <%= image_tag "no_image_avail.jpg", class: "icon-large" %>
+      <% end %>
+    <h1 class="">Sales for <%= @product_type.title %></h1>
+  </div>
   <div label="first-row" class="row ml-0">
     <div label="graph" class="container big-card col-9 rounded p-1">
-      <div id="toggle-div" class="container d-flex flex- ml-0-reverse p-0">
-        <%= link_to "Year", {:range => "year"}, class: "btn-toggle btn-clear rounded mx-1" %>
-        <%= link_to "Month", {:range => "month"}, class: "btn-toggle btn-clear rounded" %>
+      <div id="toggle-div" class="container d-flex flex-row-reverse p-0">
+        <%= link_to "Year", {:range => "year"}, class: "#{'toggle-active' if params[:range] == 'year'} btn-clear rounded mx-1" %>
+        <%= link_to "Month", {:range => "month"}, class: "#{'toggle-active' if params[:range] == 'month'} btn-clear rounded" %>
       </div>
-      <%= area_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+      <%= area_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), points: false, ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
     </div>
     <div label="stats container" class="container col-3 ">
+    <h5 class="text-center">Sales</h5>
       <div class="big-card mb-3 ">
-        <h5> Weekly Sales: </h5>
-        <h5>Last Week Sales: </h5>
+        <div class="d-flex align-items-end justify-content-between">
+          <p class="text-bold">This Week: </p>
+          <p> <%=number_to_currency(@sales_this_week) %></p>
+        </div>
+        <div class="d-flex align-items-end justify-content-between">
+          <p class="text-bold">This Month: </p>
+          <p> <%=number_to_currency(@sales_this_month)%></p>
+        </div>
       </div>
-      <div label="warning" class="big-card">
-        <h5>Warning</h5>
+      <h5 class="text-center">Inventory</h5>
+      <div label="inventory warning" class="big-card">
+        <% if @inventory_warning > 1%>
+          <h5 class="btn btn-warning m-0"> <%= @inventory_warning%> inventories are running low</h5>
+        <% elsif @inventory_warning == 1 %>
+          <h5 class="btn btn-info m-0"> <%= @inventory_warning%> inventory may have a problem</h5>
+        <% else %>
+          <h5 class="btn btn success m-0"> Inventory Supply is healthy</h5>
+        <% end %>
       </div>
     </div>
   </div>
   <div label="second-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-      <%= line_chart @product_sales_list.map { |product|
-        {name: product.color_size, data: product.sales.group_by_week(:date).sum(:sale_amt)}
-      } ,xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
+      <%= column_chart @stacked_data, stacked: true, xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
     </div>
+
     <div class="container col-3">
       <div class="big-card" >
-        <h5 class="text-center">Choose Product</h5>
+        <h5 class="text-center py-2">Choose Product Filter</h5>
         <div class="list-group">
-          <% @dropdown_list.each do |product|%>
-            <p class="list-group-item list-group-item-action"><%=product.color_size%> </p>
+          <% @dropdown_list.each do |ptype|%>
+            <%= link_to ptype.title, product_type_sales_path(ptype.id), class: "p-2 list-group-item list-group-item-action" %>
           <% end %>
         </div>
       </div>
     </div>
+
   </div>
   <table class="table my-2">
     <thead>
       <tr>
         <th class="text-center" scope="col">#</th>
         <th class="text-center" scope="col">Date</th>
-        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col"> <div class="d-f.lex"><%= link_to "Title", :sort => "product_id"%> <p class="carrot">▽</p></div> </th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
       </tr>
     </thead>
@@ -58,12 +72,13 @@
         <% i += 1 %>
           <th class="text-center" scope="row"><%= i %></th>
           <td class="text-center"> <%= sale.date.strftime("%b. %d, %Y") %></td>
-          <td><%= link_to sale.product.color_size, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+          <td> <%= sale.product.color_size %> </td>
           <td>$<%= sale.sale_amt %>0</td>
         </tr>
       <% end %>
       <tr> <th class="text-center">...</th><td class="text-center">...</td><td>...</td><td>...</td> </tr>
     </tbody>
   </table>
+</div>
 
 </div>
