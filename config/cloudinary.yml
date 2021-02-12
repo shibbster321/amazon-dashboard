@@ -1,0 +1,19 @@
+---
+development:
+  cloud_name: brock-endeavors-llc
+  api_key: '871726789315719'
+  api_secret: X5AuYpakg_7Q7rnEam2KNOL7zIo
+  enhance_image_tag: true
+  static_file_support: false
+production:
+  cloud_name: brock-endeavors-llc
+  api_key: '871726789315719'
+  api_secret: X5AuYpakg_7Q7rnEam2KNOL7zIo
+  enhance_image_tag: true
+  static_file_support: true
+test:
+  cloud_name: brock-endeavors-llc
+  api_key: '871726789315719'
+  api_secret: X5AuYpakg_7Q7rnEam2KNOL7zIo
+  enhance_image_tag: true
+  static_file_support: false
