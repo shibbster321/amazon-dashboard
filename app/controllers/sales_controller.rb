@@ -56,7 +56,7 @@ class SalesController < ApplicationController
     @stacked_data = []
     @product_sales_list = Product.where(product_type_id: @product_type.id).order(title: :desc)
     @product_sales_list.each do |product|
-      @stacked_data << { name: product.color_size, data: product.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:sale_amt).to_a }
+      @stacked_data << { name: product.color_size, data: product.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:qty).to_a }
     end
 
     @all_sales = Sale.order(params[:sort]).where(product_type: @product_type.id).limit(10)

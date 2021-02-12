@@ -6,7 +6,7 @@
     </div>
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Filter by Parent
+        <%= @product_type.title %>
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton value">
       <a class="dropdown-item" <%= link_to "All", inventories_path %> </a>
