@@ -1,6 +1,6 @@
 <div class="container">
   <h1 class="mt-3 text-center">Welcome to Amazon Dashboard</h1>
-  <p class=" text-center font-italic text-gray">updated: <%= Sale.maximum('date').strftime("%b %d, %Y")  %></p>
+  <p class=" text-center font-italic text-gray">updated: <%= Sale.maximum('date').strftime("%b %d, %Y") if Sale.count > 0 %></p>
   <% if user_signed_in? %>
     <div class="container text-center">
       <%= link_to "Sales Dashboard", sales_path, class: "btn btn-primary" %>

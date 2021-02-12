@@ -8,9 +8,9 @@ class SalesController < ApplicationController
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
     @dropdown_list = @product_type_sales_list
     # Date range
-    @most_recent_date = Sale.maximum('date')
-    @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt)
-    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 30.days).sum(:sale_amt)
+    @most_recent_date = Sale.maximum('date') ? Sale.maximum('date') : Date.today
+    @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt) if Sale.count > 1
+    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 30.days).sum(:sale_amt) if Sale.count > 1
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
       ptype = inventory.product.product_type

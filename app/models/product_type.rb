@@ -3,5 +3,5 @@ class ProductType < ApplicationRecord
     has_one_attached :photo
     validates :title, uniqueness: true
     has_many :sales, :dependent => :destroy
-    has_many :inventories
+
 end

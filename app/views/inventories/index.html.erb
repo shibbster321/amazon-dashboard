@@ -2,7 +2,7 @@
   <div class="d-flex">
     <div class="container">
       <h1>All Inventory</h1>
-      <p class="font-italic text-gray">updated: <%= Inventory.recent.first.date.strftime("%b %d, %Y")  %></p>
+      <p class="font-italic text-gray">updated: <%= Inventory.recent.first.date.strftime("%b %d, %Y") if Inventory.count > 1 %></p>
     </div>
     <div class="dropdown">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
