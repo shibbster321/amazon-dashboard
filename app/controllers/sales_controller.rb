@@ -18,7 +18,7 @@ class SalesController < ApplicationController
         @inventory_warning +=1
       end
     end
-
+    @colors = ["#b00", "#666"]
     @date_range = @most_recent_date - 30.days
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
@@ -43,7 +43,8 @@ class SalesController < ApplicationController
     @dropdown_list = @product_type_sales_list
 
     @product_type = ProductType.find(params[:product_type_id])
-
+    @color = set_color(@product_type)
+    pry
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
       if inventory.supply_days < @product_type.lead_time && inventory.product.product_type == @product_type
@@ -60,7 +61,6 @@ class SalesController < ApplicationController
     end
 
     @all_sales = Sale.order(params[:sort]).where(product_type: @product_type.id).limit(10)
-
     # Date range
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
@@ -69,4 +69,13 @@ class SalesController < ApplicationController
     end
   end
 
+  private
+
+  def set_color(product_type)
+    if product_type == ProductType.where(title: "Le Perch")
+      ['#b00']
+    else
+      []
+    end
+  end
 end

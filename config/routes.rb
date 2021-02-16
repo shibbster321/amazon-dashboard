@@ -2,6 +2,9 @@ Rails.application.routes.draw do
 
   devise_for :users
   root to: 'pages#home'
+  get '/getetsy/', to: 'pages#etsyshow', as: 'etsypath'
+  get '/authorize/', to: 'pages#etsyauthorize', as: 'etsyauthorize'
+
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :permissions, only: [:index, :edit, :update, :destroy]
   resources :product_types do
