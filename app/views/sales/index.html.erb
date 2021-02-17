@@ -35,8 +35,7 @@
   </div>
   <div label="second-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-    <p> <%= @colors %> </p>
-      <%= column_chart @stacked_data, stacked: true, color: @colors, ytitle: "Revenue", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
+      <%= column_chart @stacked_data, stacked: true, ytitle: "Revenue", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
     </div>
     <div class="container col-3">
       <div class="big-card" >

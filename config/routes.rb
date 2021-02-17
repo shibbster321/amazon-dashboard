@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   root to: 'pages#home'
   get '/getetsy/', to: 'pages#etsyshow', as: 'etsypath'
   get '/authorize/', to: 'pages#etsyauthorize', as: 'etsyauthorize'
+  get '/amzn/', to: 'pages#amzn', as: 'amzn'
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :permissions, only: [:index, :edit, :update, :destroy]

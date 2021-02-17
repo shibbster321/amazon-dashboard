@@ -12,4 +12,8 @@ class SalePolicy < ApplicationPolicy
   def subindex?
     user.status == "admin"
   end
+
+  def amzn?
+    user.status == "admin"
+  end
 end

@@ -1,12 +1,27 @@
 <div class="container">
   <h1 class="mt-3 text-center">Welcome to Amazon Dashboard</h1>
-  <p class=" text-center font-italic text-gray">updated: <%= Sale.maximum('date').strftime("%b %d, %Y") if Sale.count > 0 %></p>
   <% if user_signed_in? %>
-    <div class="container text-center">
-      <%= link_to "Sales Dashboard", sales_path, class: "btn btn-primary" %>
-      <%= link_to "Etsy Import data", etsypath_path, class: "btn btn-secondary"%>
-    </div>
+  <p class=" text-center font-italic text-gray">updated: <%= Sale.maximum('date').strftime("%b %d, %Y") if Sale.count > 0 %></p>
+    <% if current_user.status =="admin" %>
+      <div style="height: 5rem" class="container w-50 btn btn-primary d-flex justify-content-center align-items-center">
+        <%= link_to "Go to Sales Dashboard", sales_path, class: "btn" %>
+      </div>
+      <br>
+      <br>
+      <div class="container border rounded p-3">
+        <h4 class="ml-3 mb-3">Import Data from API:</h4>
+        <%= link_to "Import Etsy data", etsypath_path, class: "ml-3 btn btn-secondary"%>
+        <%= link_to "Import Amazon data", amzn_path, class: "ml-3 btn btn-dark"%>
+      </div>
+      <% else %>
+        <div class="container text-center big-card p-3">
+          <p class="m-0 font-italic"> Please Wait while you are approved for access</p>
+        </div>
+      <% end %>
   <% else %>
-      <p class="m-3 text-center">You must sign in to continue</p>
+  <br>
+    <div class="container text-center">
+      <%= link_to "You must login to contine", new_user_session_path, class: "btn btn-secondary" %>
+    </div>
   <% end %>
 </div>

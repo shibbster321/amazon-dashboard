@@ -13,7 +13,7 @@
         <%= link_to "Year", {:range => "year"}, class: "#{'toggle-active' if params[:range] == 'year'} btn-clear rounded mx-1" %>
         <%= link_to "Month", {:range => "month"}, class: "#{'toggle-active' if params[:range] == 'month'} btn-clear rounded" %>
       </div>
-      <%= column_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), points: false, ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+      <%= area_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), points: false, ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
     </div>
     <div label="stats container" class="container col-3 ">
     <h5 class="text-center">Sales</h5>
@@ -41,7 +41,7 @@
   </div>
   <div label="second-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-      <%= column_chart @stacked_data, stacked: true, colors: @color, ytitle: "Quantity", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
+      <%= column_chart @stacked_data, stacked: true, ytitle: "Quantity", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
     </div>
 
     <div class="container col-3">

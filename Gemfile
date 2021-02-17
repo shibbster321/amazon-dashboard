@@ -8,6 +8,7 @@ gem 'chartkick'
 gem 'groupdate'
 gem 'cloudinary', '~> 1.16.0'
 gem 'etsy'
+# gem 'rails_real_favicon'
 gem 'autoprefixer-rails'
 gem 'bootsnap', '>= 1.4.2', require: false
 gem 'devise'
