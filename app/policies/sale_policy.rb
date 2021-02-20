@@ -16,4 +16,18 @@ class SalePolicy < ApplicationPolicy
   def amzn?
     user.status == "admin"
   end
+    def etsycall?
+    user.status == "admin"
+  end
+  def etsyauthorize?
+    user.status == "admin"
+  end
+
+  def home?
+    user.status == "admin"
+  end
+
+  def api?
+    user.status == "admin"
+  end
 end

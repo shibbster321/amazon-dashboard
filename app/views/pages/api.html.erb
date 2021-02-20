@@ -1,0 +1,19 @@
+<div class="container">
+  <h1 class="mt-3 text-center">Manually Import API data</h1>
+  <p class=" text-center font-italic text-gray">updated: <%= Sale.maximum('date').strftime("%b %d, %Y") if Sale.count > 0 %></p>
+  <div class="container border rounded p-3">
+        <h4 class="mb-3">Import Etsy Data</h4>
+        <%= simple_form_for :query, url: etsypath_path, :method => :get do |f| %>
+          <%= f.input :etsy_amt , label: 'Number of entries', placeholder: 'e.g. 10'%>
+          <%= f.submit :submit, class: "btn btn-secondary ml-1" %>
+        <% end %>
+        <br>
+        <br>
+        <h4>Import Amazon Data</h4>
+        <%= simple_form_for :query, url: amzn_path, :method => :get do |f| %>
+          <%= f.input :start_date, label: 'Start Date', placeholder: 'e.g. 2021-01-01' %>
+          <%= f.input :end_date, label: 'End Date', placeholder: 'e.g. 2021-03-05' %>
+          <%= f.submit :submit, class: "btn btn-secondary ml-1" %>
+        <% end %>
+  </div>
+</div>

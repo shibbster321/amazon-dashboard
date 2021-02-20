@@ -1,32 +1,103 @@
-class AmazonApiService
+require "csv"
+# AmazonApiService.new(url: "/reports/2020-09-04/reports", report_type: "GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL", start_date: "2021-01-01", end_date: "2021-01-31")
+# GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL
 
-  def initialize(url)
-    @url = url
+class AmazonApiService
+  def initialize(attributes = {})
+    @url         = attributes[:url]
+    @report_type = attributes[:report_type]
+    @start_date  = attributes[:start_date]
+    @end_date    = attributes[:end_date]
     set_access_token
-    set_signed_headers
   end
-  def call
+  def get_products
     response = Typhoeus::Request.get(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
-      headers: @signed_headers
+      headers: get_signed_headers_for_get_request(@url)
     )
     JSON.parse(response.body)
   end
-    def post_orders(startDate)
+
+  def get_inv_report
+    body = "{'reportType': '#{@report_type}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
+    #### GENERATED THE REPORT
     response = Typhoeus.post(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
-      headers: @signed_headers,
-      body: {"reportType" => "GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL", "dataStartTime" => startDate, "marketplaceIds" => ENV["MARKETPLACE_ID"]}
+      headers: get_signed_headers_for_post_request(@url, body),
+      body: body
     )
-    JSON.parse(response.body)
+    report_id = JSON.parse(response.body)["payload"]["reportId"]
+    60.times do
+      sleep 1
+      print "."
+    end
+    # ### GET THE REPORT DOCUMENT ID
+    url = "https://sellingpartnerapi-na.amazon.com#{@url}/#{report_id}"
+    get_report = Typhoeus.get(
+      url,
+      headers: get_signed_headers_for_get_request(url)
+    )
+    # report_id = JSON.parse(get_report.body)["payload"]["reportId"]
+    ### GET THE REPORT DOCUMENT
+    # url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/reports/#{report_id}"
+    # get_report_document = Typhoeus.get(
+    #   url,
+    #   headers: get_signed_headers_for_get_request(url)
+    # )
+    # # ##Reponse gives us report document encryption details
+    # get_report_document_data = JSON.parse(get_report_document.body)["payload"]
+    # p get_report_document_data["encryptionDetails"]
+    # # Encryption details we use to decrypt the document content
+    # cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+    # puts "cipher done"
+    # cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
+    # cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
+    # encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
+    # document = cipher.update(encrypted_document) + cipher.final
+    # # That gives us kind of a CSV of sale data that we need to parse
+    # csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
-# 2021-02-10T20:55:23+0000
-# GET_FLAT_FILE_ALL_ORDERS_DATA_BY_ORDER_DATE_GENERAL
-# GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL
-# GET_FBA_FULFILLMENT_CUSTOMER_SHIPMENT_SALES_DATA
-# GET_AFN_INVENTORY_DATA
-# GET_FBA_FULFILLMENT_CURRENT_INVENTORY_DATA
+  def get_report
+    body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
+    #### GENERATED THE REPORT
+    response = Typhoeus.post(
+      "https://sellingpartnerapi-na.amazon.com#{@url}",
+      headers: get_signed_headers_for_post_request(@url, body),
+      body: body
+    )
+    report_id = JSON.parse(response.body)["payload"]["reportId"]
+    30.times do
+      sleep 1
+      print "."
+    end
+    ### GET THE REPORT DOCUMENT ID
+    url = "https://sellingpartnerapi-na.amazon.com#{@url}/#{report_id}"
+    get_report = Typhoeus.get(
+      url,
+      headers: get_signed_headers_for_get_request(url)
+    )
+    report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
+    ### GET THE REPORT DOCUMENT
+    url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
+    get_report_document = Typhoeus.get(
+      url,
+      headers: get_signed_headers_for_get_request(url)
+    )
+    # Reponse gives us report document encryption details
+    get_report_document_data = JSON.parse(get_report_document.body)["payload"]
+    # p get_report_document_data["encryptionDetails"]
+    # Encryption details we use to decrypt the document content
+    cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+    cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
+    cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
+    encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
+    document = cipher.update(encrypted_document) + cipher.final
+    # That gives us kind of a CSV of sale data that we need to parse
+    csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
+  end
+
   private
+
     def set_access_token
       get_access_token_response = Typhoeus.post(
         "https://api.amazon.com/auth/o2/token",
@@ -42,15 +113,16 @@ class AmazonApiService
       )
       @access_token = JSON.parse(get_access_token_response.body)["access_token"]
     end
-    def set_signed_headers
-      signature = Aws::Sigv4::Signer.new(
+    def get_signed_headers_for_get_request(url)
+      signer = Aws::Sigv4::Signer.new(
         service: 'execute-api',
         region: 'us-east-1',
         access_key_id: ENV["AWS_ACCESS_KEY_ID"],
         secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"],
-      ).sign_request(
-        http_method: 'POST',
-        url: "https://sellingpartnerapi-na.amazon.com#{@url}",
+      )
+      signature = signer.sign_request(
+        http_method: 'GET',
+        url: url,
         headers: {
           "User-Agent" => "SellingPartnerAPI/1.0 (Language=Ruby)",
           "Accept" => "application/json",
@@ -62,8 +134,36 @@ class AmazonApiService
         "User-Agent" => "SellingPartnerAPI/1.0 (Language=Ruby)",
         "Accept" => "application/json",
         "Content-Type" => "application/json",
+        "x-amz-access-token" => @access_token,
+        ##manually adding madketplace header
+        # "[MarketplaceId]" => "#{ENV['MARKETPLACE_ID']}"
+      }
+      return signature.headers.merge(headers)
+    end
+    def get_signed_headers_for_post_request(url, body)
+      signer = Aws::Sigv4::Signer.new(
+        service: 'execute-api',
+        region: 'us-east-1',
+        access_key_id: ENV["AWS_ACCESS_KEY_ID"],
+        secret_access_key: ENV["AWS_SECRET_ACCESS_KEY"],
+      )
+      signature = signer.sign_request(
+        http_method: 'POST',
+        url: "https://sellingpartnerapi-na.amazon.com#{@url}",
+        headers: {
+          "User-Agent" => "SellingPartnerAPI/1.0 (Language=Ruby)",
+          "Accept" => "application/json",
+          "Content-Type" => "application/json",
+          "Host" => "sellingpartnerapi-na.amazon.com",
+        },
+        body: body
+      )
+      headers = {
+        "User-Agent" => "SellingPartnerAPI/1.0 (Language=Ruby)",
+        "Accept" => "application/json",
+        "Content-Type" => "application/json",
         "x-amz-access-token" => @access_token
       }
-      @signed_headers = signature.headers.merge(headers)
+      return signature.headers.merge(headers)
     end
 end
