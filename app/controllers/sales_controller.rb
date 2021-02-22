@@ -13,11 +13,12 @@ class SalesController < ApplicationController
     @sales_this_month = Sale.where("date >= ?", @most_recent_date - 30.days).sum(:sale_amt) if Sale.count > 1
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
-      ptype = inventory.product.product_type
-      if inventory.supply_days < ptype.lead_time
-        @inventory_warning +=1
+        ptype = inventory.product.product_type
+        if inventory.supply_days < ptype.lead_time
+          @inventory_warning +=1
+        end
       end
-    end
+    # set date range for charts
     @date_range = @most_recent_date - 30.days
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
@@ -25,6 +26,21 @@ class SalesController < ApplicationController
       @date_range = @most_recent_date - 30.days
     end
 
+    # data for sales by store
+    stores = ["etsy", "amazon"]
+    @store_data = []
+    stores.each do |store|
+      @store_data << { name: store, data: Sale.where("date >= ? and store = ?", @date_range, store).group_by_week(:date).sum(:sale_amt).to_a }
+    end
+
+
+      # # data for sales by accounting
+      @accounting_data = [
+      {name: "Mfg Cost", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:cost).to_a },
+      {name: "FBA Fee", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:fba_fee).to_a },
+        {name: "Profit", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:profit).to_a}
+      ]
+    # data for sales by product
     @stacked_data = []
     @product_type_sales_list.each do |ptype|
       @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:sale_amt).to_a }

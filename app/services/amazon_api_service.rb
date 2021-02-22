@@ -76,6 +76,7 @@ class AmazonApiService
       url,
       headers: get_signed_headers_for_get_request(url)
     )
+    puts "got document id"
     report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
     ### GET THE REPORT DOCUMENT
     url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
@@ -83,16 +84,19 @@ class AmazonApiService
       url,
       headers: get_signed_headers_for_get_request(url)
     )
+    puts "got document"
     # Reponse gives us report document encryption details
     get_report_document_data = JSON.parse(get_report_document.body)["payload"]
     # p get_report_document_data["encryptionDetails"]
     # Encryption details we use to decrypt the document content
     cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+    puts "getting cipher details"
     cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
     cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
     encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
     document = cipher.update(encrypted_document) + cipher.final
     # That gives us kind of a CSV of sale data that we need to parse
+    puts "document is ciphered"
     csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
 

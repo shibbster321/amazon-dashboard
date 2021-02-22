@@ -7,7 +7,7 @@
         <%= link_to "Year", {:range => "year"}, class: "#{'toggle-active' if params[:range] == 'year'} btn-clear rounded mx-1" %>
         <%= link_to "Month", {:range => "month"}, class: "#{'toggle-active' if params[:range] == 'month'} btn-clear rounded" %>
       </div>
-      <%= area_chart Sale.group_by_day(:date).sum(:sale_amt), points: false, thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") if Sale.count > 1 %>
+      <%= area_chart @store_data, points: false, colors: ['#DC4950', '#Ff9900'], thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "Total Sales", legend: "right", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") if Sale.count > 1 %>
     </div>
     <div label="stats container" class="container col-3 ">
     <h5 class="text-center">Sales</h5>
@@ -33,9 +33,14 @@
       </div>
     </div>
   </div>
-  <div label="second-row" class="row ml-0 mt-3">
+  <div label = "second row" class="row ml-0 mt-3">
+    <div class="col-9 big-card">
+      <%= column_chart @accounting_data, stacked: true, colors:['#606060', '#A9A9A9', '#3CB371'], thousands: ',' ,prefix: '$ ', ytitle: "$", title: "Profitability", legend: "right", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") if Sale.count > 1 %>
+    </div>
+  </div>
+  <div label="third-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-      <%= column_chart @stacked_data, stacked: true,thousands: ',' ,prefix: '$ ', ytitle: "Revenue", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
+      <%= column_chart @stacked_data, stacked: true,thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "By Product Type", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
     </div>
     <div class="container col-3">
       <div class="big-card" >

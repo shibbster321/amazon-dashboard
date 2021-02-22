@@ -24,6 +24,7 @@ class PagesController < ApplicationController
 
   def etsycall
     authorize Sale
+    count = params[:query][:etsy_amt].to_i
     request_token = Etsy.request_token
     session[:request_token]  = request_token.token
     session[:request_secret] = request_token.secret
@@ -34,9 +35,7 @@ class PagesController < ApplicationController
     authorize Sale
     access_token = Etsy.access_token(session[:request_token], session[:request_secret], params[:oauth_verifier] )
     access = {:access_token => access_token.token, :access_secret => access_token.secret}
-    response = Etsy::Request.get('/shops/BBDesignCoUS/transactions', access.merge(:limit => 10))
-    # response = Etsy::Request.get('/listings/929705473/transactions')
-    # access_token.token and access_token.secret can now be saved for future API calls
+    response = Etsy::Request.get('/shops/BBDesignCoUS/transactions', access.merge(:limit => 100))
     hash = response.to_hash
     hash["results"].each do |sale|
       resp = Etsy::Request.get("/shops/BBDesignCoUS/receipts/#{sale['receipt_id']}/payments", access)
@@ -46,10 +45,8 @@ class PagesController < ApplicationController
       qty = sale["quantity"]
       sku = sale["product_data"]["sku"]
       order_id = sale["transaction_id"].to_s
-      selling_fee = 5.00
-      fba_fee = 0
-      total = sale_amt
-      new = Sale.new({date: date, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt.round(2), selling_fee: selling_fee.round(2), fba_fee: fba_fee.round(2), total: total.round(2)})
+      store = "etsy"
+      new = Sale.new({store: store, date: date, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt.round(2) })
       if Product.find_by(sku: new.sku)
           product = Product.find_by(sku: new.sku)
           new.product_id = product.id

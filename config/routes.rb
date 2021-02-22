@@ -3,7 +3,7 @@ Rails.application.routes.draw do
   devise_for :users
   root to: 'pages#home'
   get '/getetsy/', to: 'pages#etsycall', as: 'etsypath'
-  get '/authorize/', to: 'pages#etsyauthorize', as: 'etsyauthorize'
+  get '/etsyauthorize/', to: 'pages#etsyauthorize', as: 'etsyauthorize'
   get '/amzn/', to: 'pages#amzn', as: 'amzn'
   get '/apis/', to: 'pages#api', as: 'api'
 

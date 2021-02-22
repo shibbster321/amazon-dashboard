@@ -1,8 +1,10 @@
 <div class="container w-50">
-<p> Edit Child Product Information </p>
+<H3> Edit Parent Product Information </H3>
   <%= simple_form_for(@product_type) do |f| %>
     <%= f.input :title %>
-    <%= f.input :lead_time %>
+    <%= f.input :lead_time, label: "Lead Time (in days)" %>
+    <%= f.input :fba_fee %>
+    <%= f.input :cost %>
     <%= f.input :photo, as: :file %>
     <%= f.submit "Finished", class: "btn btn-secondary" %>
   <% end %>

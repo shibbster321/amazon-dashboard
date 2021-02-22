@@ -16,6 +16,7 @@ class ProductTypesController < ApplicationController
      @product_type = ProductType.new(product_type_params)
     if @product_type.save
       @product_type.save
+      update_sale_fee_data(@product_type)
       redirect_to new_product_type_product_path(@product_type)
     else
       render :new
@@ -38,6 +39,7 @@ class ProductTypesController < ApplicationController
     authorize ProductType
     @product_type = ProductType.find(params[:id])
     if @product_type.update(product_type_params)
+      update_sale_fee_data(@product_type)
       redirect_to product_types_path, notice: 'Parent product was successfully updated.'
     else
       render :edit
@@ -60,6 +62,13 @@ class ProductTypesController < ApplicationController
   end
 
   def product_type_params
-    params.require(:product_type).permit(:title, :lead_time, :photo)
+    params.require(:product_type).permit(:title, :cost, :fba_fee, :lead_time, :photo)
+  end
+
+  def update_sale_fee_data(ptype)
+    array = Sale.where("product_type_id = ?", ptype.id )
+    array.each do |sale|
+      sale.update_sale_event
+    end
   end
 end
