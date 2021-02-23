@@ -24,7 +24,7 @@ class PagesController < ApplicationController
 
   def etsycall
     authorize Sale
-    count = params[:query][:etsy_amt].to_i
+    # count = params[:query][:etsy_amt].to_i
     request_token = Etsy.request_token
     session[:request_token]  = request_token.token
     session[:request_secret] = request_token.secret
@@ -36,17 +36,15 @@ class PagesController < ApplicationController
     access_token = Etsy.access_token(session[:request_token], session[:request_secret], params[:oauth_verifier] )
     access = {:access_token => access_token.token, :access_secret => access_token.secret}
     response = Etsy::Request.get('/shops/BBDesignCoUS/transactions', access.merge(:limit => 100))
-    hash = response.to_hash
+    hash = if response.to_hash then response.to_hash else puts "problem with api call" end
     hash["results"].each do |sale|
-      resp = Etsy::Request.get("/shops/BBDesignCoUS/receipts/#{sale['receipt_id']}/payments", access)
-      net_amt = resp.to_hash["results"][0]["amount_net"].to_i
-      sale_amt = net_amt / 100.00
+      sale_amt = sale["price"].to_f
       date = Time.at(sale["creation_tsz"]).to_datetime
       qty = sale["quantity"]
       sku = sale["product_data"]["sku"]
       order_id = sale["transaction_id"].to_s
       store = "etsy"
-      new = Sale.new({store: store, date: date, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt.round(2) })
+      new = Sale.new({store: store, date: date, fba_fee: 0.0, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt })
       if Product.find_by(sku: new.sku)
           product = Product.find_by(sku: new.sku)
           new.product_id = product.id

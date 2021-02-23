@@ -9,8 +9,22 @@ class InventoriesController < ApplicationController
 
     @bar_data = []
     @inventories.each do |item|
-      @bar_data << ["#{item.product.title}-#{item.product.color_size}", item.supply_days]
+      @bar_data << ["#{item.product.title[0..15]}-#{item.product.color_size}", item.supply_days]
     end
+
+    # data for sales by store
+    date_recent = Inventory.recent.first.date
+    locations = ["amazon", "etsy", "avid"]
+    @location_data = []
+    locations.each do |location|
+      inventories_store = @inventories.where("location = ?", location)
+      item_array_data =[]
+      inventories_store.each do |item|
+        item_array_data << ["#{item.product.title[0..15]}-#{item.product.color_size}", item.available ]
+      end
+      @location_data << {name: location, data: item_array_data }
+    end
+
   end
 
   def subindex
@@ -23,8 +37,19 @@ class InventoriesController < ApplicationController
     @inventories.each do |item|
       @bar_data << ["#{item.product.color_size}", item.supply_days]
     end
+    # data for sales by store
+    date_recent = Inventory.recent.first.date
+    locations = ["amazon", "etsy", "avid"]
+    @location_data = []
+    locations.each do |location|
+      inventories_store = @inventories.where("location = ?", location)
+      item_array_data =[]
+      inventories_store.each do |item|
+        item_array_data << [item.product.color_size, item.available ]
+      end
+      @location_data << {name: location, data: item_array_data }
+    end
   end
-
   private
 
 end

@@ -1,5 +1,5 @@
 class Sale < ApplicationRecord
-  after_initialize :set_defaults, unless: :persisted?
+  before_validation :set_defaults, unless: :persisted?
 
   after_validation :round, on: [ :create, :save ]
 
@@ -28,8 +28,8 @@ class Sale < ApplicationRecord
 
   def update_sale_event
     puts"updating fees"
-    self.fba_fee = self.product_type.fba_fee if self.store == "amazn"
-    self.cost = self.product_type.cost
+    self.fba_fee = if self.product_type.fba_fee && self.qty && self.store == "amazon" then (self.product_type.fba_fee * self.qty) else 0.00 end
+    self.cost = if self.product_type.cost && self.qty then (self.product_type.cost * self.qty) else 0.00 end
     self.profit = (if self.sale_amt then self.sale_amt else 0.0 end) - (if self.cost then self.cost else 0.0 end) - (if self.fba_fee then self.fba_fee else 0.0 end)
     self.save if self.save
   end
@@ -37,10 +37,9 @@ class Sale < ApplicationRecord
   def set_defaults
     puts "defaults set"
     self.sale_amt = 0.00 if self.sale_amt.nil?
-    self.fba_fee = self.product_type.fba_fee if self.fba_fee.nil?
-    self.cost = self.product_type.cost if self.cost.nil?
+    self.fba_fee = if self.product_type.fba_fee && self.qty && self.store == "amazon" then (self.product_type.fba_fee * self.qty) else 0.00 end
+    self.cost = if self.product_type.cost && self.qty then (self.product_type.cost * self.qty) else 0.00 end
     self.profit = (if self.sale_amt then self.sale_amt else 0.0 end) - (if self.cost then self.cost else 0.0 end) - (if self.fba_fee then self.fba_fee else 0.0 end)
-    self.profit.round(2) unless self.profit.nil?
   end
   def round
     puts "rounded"

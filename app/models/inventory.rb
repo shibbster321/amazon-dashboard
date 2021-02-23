@@ -1,8 +1,7 @@
 class Inventory < ApplicationRecord
   belongs_to :product
-  belongs_to :product_type
 
-  validates_uniqueness_of :date, scope: :asin
+  validates_uniqueness_of :date, scope: [:sku, :location]
 
   def self.recent
     most_recent_date = Inventory.maximum('date')

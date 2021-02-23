@@ -16,16 +16,21 @@
       </div>
     </div>
   </div>
-  <div class="big-card">
-    <%= column_chart @bar_data , title: "Supply Days" %>
+  <div class=" container justify-content-between row p-0 m-0">
+    <div class="big-card col-5">
+      <%= column_chart @bar_data , title: "Supply Days", ytitle: "Days" %>
+    </div>
+    <div class="big-card col-6">
+      <%= column_chart @location_data, stacked: true, legend: "right", title: "Inventory by Location", ytitle: "Quantity" %>
+    </div>
   </div>
-
-  <table class="table my-2">
+    <table class="table my-2">
     <thead>
       <tr>
         <th class="text-center" scope="col">#</th>
         <th class="text-center" scope="col">Image</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Location", :sort => "location"%> <p class="carrot">▽</p></div> </th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Supply Days", :sort => "supply_days"%> <p class="carrot">▽</p></div> </th>
         <th scope="col"> available</th>
         <th scope="col"> inbound</th>
@@ -46,8 +51,9 @@
               <%= image_tag "no_image_avail.jpg", class: "icon-square" %>
             <% end %>
           </td>
-          <td><%= inventory.product.title %> - <%= inventory.product.color_size %></td>
-          <td class= <%= if inventory.supply_days<=30 then "bg-red" else "" end %>>
+          <td><%= link_to inventory.product.title, product_type_inventories_path(inventory.product.product_type_id), class: "btn-simple" %> - <%= inventory.product.color_size %></td>
+          <td><%= inventory.location %></td>
+          <td class= <%= if inventory.supply_days<= inventory.product.product_type.lead_time then "bg-red" else "" end %>>
             <%= inventory.supply_days %>
           </td>
           <td><%= inventory.available %></td>

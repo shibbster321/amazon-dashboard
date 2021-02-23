@@ -40,14 +40,14 @@
   </div>
   <div label="third-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-      <%= column_chart @stacked_data, stacked: true,thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "By Product Type", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
+      <%= column_chart @stacked_data, stacked: true, thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "By Product Type (#{@store})", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" if @stacked_data %>
     </div>
     <div class="container col-3">
       <div class="big-card" >
-        <h5 class="text-center py-2">Choose Product Filter</h5>
+        <h5 class="text-center py-2">Filter by Store</h5>
         <div class="list-group">
-          <% @dropdown_list.each do |ptype|%>
-            <%= link_to ptype.title, product_type_sales_path(ptype.id), class: "p-2 list-group-item list-group-item-action" %>
+          <% @store_list.each do |store|%>
+            <%= link_to store.capitalize, {:filter => store}, class: "p-2 list-group-item list-group-item-action" %>
           <% end %>
         </div>
       </div>

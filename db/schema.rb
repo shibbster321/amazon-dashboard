@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_02_22_090750) do
+ActiveRecord::Schema.define(version: 2021_02_23_182049) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,7 +39,6 @@ ActiveRecord::Schema.define(version: 2021_02_22_090750) do
   create_table "inventories", force: :cascade do |t|
     t.datetime "date"
     t.bigint "product_id", null: false
-    t.string "asin"
     t.string "sku"
     t.integer "available"
     t.integer "inbound"
@@ -48,6 +47,7 @@ ActiveRecord::Schema.define(version: 2021_02_22_090750) do
     t.datetime "updated_at", precision: 6, null: false
     t.integer "total"
     t.integer "processing"
+    t.string "location"
     t.index ["product_id"], name: "index_inventories_on_product_id"
   end
 

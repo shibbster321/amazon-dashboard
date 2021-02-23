@@ -6,7 +6,7 @@ class SalesController < ApplicationController
     authorize Sale
     @all_sales = Sale.order(params[:sort]).limit(10)
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
-    @dropdown_list = @product_type_sales_list
+    @store_list = ["all", "amazon", "etsy"]
     # Date range
     @most_recent_date = Sale.maximum('date') ? Sale.maximum('date') : Date.today
     @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt) if Sale.count > 1
@@ -33,19 +33,27 @@ class SalesController < ApplicationController
       @store_data << { name: store, data: Sale.where("date >= ? and store = ?", @date_range, store).group_by_week(:date).sum(:sale_amt).to_a }
     end
 
-
-      # # data for sales by accounting
-      @accounting_data = [
-      {name: "Mfg Cost", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:cost).to_a },
-      {name: "FBA Fee", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:fba_fee).to_a },
-        {name: "Profit", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:profit).to_a}
-      ]
+    # data for sales by accounting
+    @accounting_data = [
+    {name: "Mfg Cost", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:cost).to_a },
+    {name: "FBA Fee", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:fba_fee).to_a },
+    {name: "Profit", data: Sale.where("date >= ?", @date_range).group_by_week(:date).sum(:profit).to_a}
+    ]
     # data for sales by product
     @stacked_data = []
+    @store = "All"
     @product_type_sales_list.each do |ptype|
-      @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:sale_amt).to_a }
+      if params[:filter] == "amazon"
+        @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ? and store = ?", @date_range, "amazon").group_by_week(:date).sum(:sale_amt).to_a }
+        @store = "Amazon"
+      elsif params[:filter] == "etsy"
+        @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ? and store = ?", @date_range, "etsy").group_by_week(:date).sum(:sale_amt).to_a }
+        @store = "Etsy"
+      else
+        @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:sale_amt).to_a }
+        @store = "All"
+      end
     end
-
 
   end
 
@@ -55,10 +63,10 @@ class SalesController < ApplicationController
     @date_range = @most_recent_date - 30.days
 
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
-    @dropdown_list = @product_type_sales_list
+    @store_list = ["all", "amazon", "etsy"]
 
     @product_type = ProductType.find(params[:product_type_id])
-    # @color = set_color(@product_type)
+
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
       if inventory.supply_days < @product_type.lead_time && inventory.product.product_type == @product_type
@@ -70,8 +78,18 @@ class SalesController < ApplicationController
 
     @stacked_data = []
     @product_sales_list = Product.where(product_type_id: @product_type.id).order(title: :desc)
+    @store = "All"
     @product_sales_list.each do |product|
-      @stacked_data << { name: product.color_size, data: product.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:qty).to_a }
+      if params[:filter] == "amazon"
+        @stacked_data << { name: product.color_size, data: product.sales.where("date >= ? and store = ?", @date_range, "amazon").group_by_week(:date).sum(:qty).to_a }
+        @store = "Amazon"
+      elsif params[:filter] == "etsy"
+        @stacked_data << { name: product.color_size, data: product.sales.where("date >= ? and store = ?", @date_range, "etsy").group_by_week(:date).sum(:qty).to_a }
+        @store = "Etsy"
+      else
+        @stacked_data << { name: product.color_size, data: product.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:qty).to_a }
+        @store = "All"
+      end
     end
 
     @all_sales = Sale.order(params[:sort]).where(product_type: @product_type.id).limit(10)
@@ -85,11 +103,5 @@ class SalesController < ApplicationController
 
   private
 
-  # def set_color(product_type)
-  #   if product_type == ProductType.where(title: "Le Perch")
-  #     ['#b00']
-  #   else
-  #     []
-  #   end
-  # end
+
 end

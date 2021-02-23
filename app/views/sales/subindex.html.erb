@@ -13,7 +13,8 @@
         <%= link_to "Year", {:range => "year"}, class: "#{'toggle-active' if params[:range] == 'year'} btn-clear rounded mx-1" %>
         <%= link_to "Month", {:range => "month"}, class: "#{'toggle-active' if params[:range] == 'month'} btn-clear rounded" %>
       </div>
-      <%= area_chart Sale.where(product_type_id: @product_type.id).group_by_day(:date).sum(:sale_amt), points: false, ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+      <%= column_chart Sale.where(product_type_id: @product_type.id).group_by_week(:date).sum(:sale_amt), thousands: ',' ,prefix: '$ ', ytitle: "Revenue", title: "Total Sales", xmin: @date_range.strftime("%Y-%m-%d") , xmax: @most_recent_date.strftime("%Y-%m-%d") %>
+
     </div>
     <div label="stats container" class="container col-3 ">
     <h5 class="text-center">Sales</h5>
@@ -41,15 +42,15 @@
   </div>
   <div label="second-row" class="row ml-0 mt-3">
     <div label="ptype graph" class="big-card col-9 ">
-      <%= column_chart @stacked_data, stacked: true, ytitle: "Quantity", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
+      <%= column_chart @stacked_data, stacked: true, title: "By Product (#{@store})", ytitle: "Quantity", xmin: @date_range.strftime("%Y-%m-%d"), xmax: @most_recent_date.strftime("%Y-%m-%d"), legend: "right" %>
     </div>
 
     <div class="container col-3">
-      <div class="big-card" >
-        <h5 class="text-center py-2">Choose Product Filter</h5>
+      <div class="rounded border p-2" >
+        <h5 class="text-center py-2">Choose Store</h5>
         <div class="list-group">
-          <% @dropdown_list.each do |ptype|%>
-            <%= link_to ptype.title, product_type_sales_path(ptype.id), class: "p-2 list-group-item list-group-item-action" %>
+          <% @store_list.each do |store|%>
+            <%= link_to store.capitalize, {:filter => store}, class: "p-2 list-group-item list-group-item-action" %>
           <% end %>
         </div>
       </div>

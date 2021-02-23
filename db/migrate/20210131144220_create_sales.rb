@@ -10,6 +10,7 @@ class CreateSales < ActiveRecord::Migration[6.0]
       t.integer :qty
       t.float :sale_amt
       t.float :selling_fee
+      t.float :fba_fee
       t.float :total
 
       t.timestamps
