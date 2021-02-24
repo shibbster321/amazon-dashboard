@@ -19,7 +19,7 @@ class AmazonApiService
   end
 
   def get_inventory
-    headers = "{'details': true, 'granularityType': Marketplace, 'granularityId': string, 'marketplaceIds': [#{ENV['MARKETPLACE_ID']}] }"
+    headers = "{'details': true, 'granularityType': 'Marketplace', 'granularityId': string, 'marketplaceIds': [#{ENV['MARKETPLACE_ID']}] }"
     response = Typhoeus::Request.get(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
       headers: get_signed_headers_for_get_request(@url)
@@ -29,7 +29,7 @@ class AmazonApiService
   end
 
   def get_inventory_report
-    body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
+    body = "{'reportType': '#{@report_type}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
     #### GENERATED THE REPORT
     response = Typhoeus.post(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
@@ -38,7 +38,7 @@ class AmazonApiService
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
     puts report_id
-    30.times do
+    60.times do
       sleep 1
       print "."
     end
@@ -69,7 +69,7 @@ class AmazonApiService
     document = cipher.update(encrypted_document) + cipher.final
     # That gives us kind of a CSV of sale data that we need to parse
     puts "document is ciphered"
-    csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
+    CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
   def get_report
     body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
@@ -81,7 +81,7 @@ class AmazonApiService
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
     puts report_id
-    30.times do
+    60.times do
       sleep 1
       print "."
     end

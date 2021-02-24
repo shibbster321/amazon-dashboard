@@ -1,7 +1,7 @@
 class Sale < ApplicationRecord
   before_validation :set_defaults, unless: :persisted?
 
-  after_validation :round, on: [ :create, :save ]
+  before_save :round
 
   belongs_to :product
   belongs_to :product_type
@@ -32,7 +32,7 @@ class Sale < ApplicationRecord
     self.fba_fee = if self.product_type.fba_fee && self.qty && self.store == "amazon" then (self.product_type.fba_fee * self.qty) else 0.00 end
     self.cost = if self.product_type.cost && self.qty then (self.product_type.cost * self.qty) else 0.00 end
     self.profit = (if self.sale_amt then self.sale_amt else 0.0 end) - (if self.cost then self.cost else 0.0 end) - (if self.fba_fee then self.fba_fee else 0.0 end)
-    self.save if self.save
+    self.save
   end
   private
   def set_defaults
