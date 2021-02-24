@@ -44,10 +44,10 @@ development:
 test:
   <<: *default
   database: amazon_dashboard_test
-  username: rails
-  password: tester12
-  host: localhost
-  port: 5432
+  # username: rails
+  # password: tester12
+  # host: localhost
+  # port: 5432
 # like your database password, in your source code. If your source code is
 # As with config/credentials.yml, you never want to store sensitive information,
 # ever seen by anyone, they now have access to your database.

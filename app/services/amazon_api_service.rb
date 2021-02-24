@@ -18,8 +18,18 @@ class AmazonApiService
     JSON.parse(response.body)
   end
 
-  def get_inv_report
-    body = "{'reportType': '#{@report_type}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
+  def get_inventory
+    headers = "{'details': true, 'granularityType': Marketplace, 'granularityId': string, 'marketplaceIds': [#{ENV['MARKETPLACE_ID']}] }"
+    response = Typhoeus::Request.get(
+      "https://sellingpartnerapi-na.amazon.com#{@url}",
+      headers: get_signed_headers_for_get_request(@url)
+    )
+    JSON.parse(response.body)
+
+  end
+
+  def get_inventory_report
+    body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
     #### GENERATED THE REPORT
     response = Typhoeus.post(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
@@ -27,35 +37,39 @@ class AmazonApiService
       body: body
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
-    60.times do
+    puts report_id
+    30.times do
       sleep 1
       print "."
     end
-    # ### GET THE REPORT DOCUMENT ID
+    ### GET THE REPORT DOCUMENT ID
     url = "https://sellingpartnerapi-na.amazon.com#{@url}/#{report_id}"
     get_report = Typhoeus.get(
       url,
       headers: get_signed_headers_for_get_request(url)
     )
-    # report_id = JSON.parse(get_report.body)["payload"]["reportId"]
+    puts "got document id"
+    report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
     ### GET THE REPORT DOCUMENT
-    # url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/reports/#{report_id}"
-    # get_report_document = Typhoeus.get(
-    #   url,
-    #   headers: get_signed_headers_for_get_request(url)
-    # )
-    # # ##Reponse gives us report document encryption details
-    # get_report_document_data = JSON.parse(get_report_document.body)["payload"]
+    url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
+    get_report_document = Typhoeus.get(
+      url,
+      headers: get_signed_headers_for_get_request(url)
+    )
+    puts "got document"
+    # Reponse gives us report document encryption details
+    get_report_document_data = JSON.parse(get_report_document.body)["payload"]
     # p get_report_document_data["encryptionDetails"]
-    # # Encryption details we use to decrypt the document content
-    # cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
-    # puts "cipher done"
-    # cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
-    # cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
-    # encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
-    # document = cipher.update(encrypted_document) + cipher.final
-    # # That gives us kind of a CSV of sale data that we need to parse
-    # csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
+    # Encryption details we use to decrypt the document content
+    cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+    puts "getting cipher details"
+    cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
+    cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
+    encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
+    document = cipher.update(encrypted_document) + cipher.final
+    # That gives us kind of a CSV of sale data that we need to parse
+    puts "document is ciphered"
+    csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
   def get_report
     body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
@@ -66,6 +80,7 @@ class AmazonApiService
       body: body
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
+    puts report_id
     30.times do
       sleep 1
       print "."

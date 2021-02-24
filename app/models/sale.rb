@@ -13,7 +13,8 @@ class Sale < ApplicationRecord
     last_month = most_recent_date - 30.days
     Sale.where(["date > ? and date < ?", last_month, most_recent_date])
   end
-
+ # start_date = "2021-02-01"
+ # end_date = "2021-02-20"
   def self.fetch_amzn_sales(start_date, end_date)
     puts "fetching amazon sales"
     attributes = {
