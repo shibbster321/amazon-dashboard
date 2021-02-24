@@ -30,4 +30,5 @@ class SalePolicy < ApplicationPolicy
   def api?
     user.status == "admin"
   end
+
 end

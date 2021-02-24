@@ -12,4 +12,8 @@ class InventoryPolicy < ApplicationPolicy
   def subindex?
     user.status == "admin"
   end
+
+    def amzn_inv?
+    user.status == "admin"
+  end
 end

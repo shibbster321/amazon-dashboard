@@ -19,7 +19,18 @@ class PagesController < ApplicationController
       flash.now[:notice] = 'Your formatting is inccorect, please try again!'
       render "api"
     end
+  end
 
+  def amzn_inv
+    authorize Inventory
+    flash.now[:notice] = 'This may take a minute...'
+    if Inventory.fetch_amzn_inventory
+      flash.now[:notice] = 'Amazon Inventory succesfully updated!'
+      render "api"
+    else
+      flash.now[:notice] = 'Something went wrong, please try again!'
+      render "api"
+    end
   end
 
   def etsycall
