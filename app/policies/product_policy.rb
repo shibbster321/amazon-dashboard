@@ -24,7 +24,4 @@ class ProductPolicy < ApplicationPolicy
   def destroy?
     user.status == "admin"
   end
-    def editparent?
-    user.status == "admin"
-  end
 end
