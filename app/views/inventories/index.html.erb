@@ -34,7 +34,7 @@
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Supply Days", :sort => "supply_days"%> <p class="carrot">▽</p></div> </th>
         <th scope="col"> available</th>
         <th scope="col"> inbound</th>
-        <th scope="col"> unavailable</th>
+        <th scope="col"> reserved</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Total", :sort => "total"%> <p class="carrot">▽</p></div> </th>
       </tr>
     </thead>
@@ -58,7 +58,7 @@
           </td>
           <td><%= inventory.available %></td>
           <td><%= inventory.inbound %></td>
-          <td><%= inventory.processing %></td>
+          <td><%= inventory.reserved %></td>
           <td><%= inventory.total %></td>
         </tr>
       <% end %>

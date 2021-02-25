@@ -12,6 +12,7 @@
         <th scope="col">SKU</th>
         <th scope="col">Color/Size</th>
         <th scope="col"> edit</th>
+        <th scope="col"> Change parent</th>
 
       </tr>
     </thead>
@@ -33,6 +34,7 @@
           <td><%= item.sku %></td>
           <td><%= item.color_size %></td>
           <td><%= link_to "edit", edit_product_type_product_path(@product_type, {:id => item.id}), class: "btn-edit" %> / <%= link_to 'delete',product_type_product_path(@product_type, {:id => item.id}),method: :delete, data: {confirm: "Are you sure you want to delete this??"} %></td>
+          <td><%= link_to "Re-assign parent", product_type_product_edit_parent_path(@product_type.id, {:product_id => item.id}), class: "btn btn-secondary", data: {confirm: "Are you sure you want to reassign the parent product??"} %> </td>
         </tr>
       <% end %>
     </tbody>

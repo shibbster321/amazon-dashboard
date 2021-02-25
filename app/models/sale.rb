@@ -1,5 +1,5 @@
 class Sale < ApplicationRecord
-  before_validation :set_defaults, unless: :persisted?
+  before_save :set_defaults, unless: :persisted?
 
   before_save :round
 

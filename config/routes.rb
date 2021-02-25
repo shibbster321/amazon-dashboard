@@ -13,7 +13,8 @@ Rails.application.routes.draw do
   resources :product_types do
     get '/inventories/', to: 'inventories#subindex', as: 'inventories'
     get '/sales/', to: 'sales#subindex', as: 'sales'
-    resources :products
+    resources :products do
+    end
   end
 
   resources :inventories, only: [:index]

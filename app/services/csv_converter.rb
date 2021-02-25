@@ -21,7 +21,7 @@ class CsvConverter
           new_sale.product_id = product.id
           new_sale.product_type_id = product.product_type_id
       else #if the product does not exist
-        if ProductType.find_by(title: "MISC") then ptype = ProductType.find_by(title: "MISC") else ptype = ProductType.create({title: "MISC"}) end
+        if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
         new_sale.product_type_id = ptype.id
         product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
         new_sale.product_id = product.id
@@ -38,23 +38,22 @@ class CsvConverter
       @csv.each do |row|
       location = "amazon"
       date = (Time.now.utc - 8.hours).to_date
-      available = row['item-price'].to_i
+      available = row['afn-fulfillable-quantity'].to_i
       sku = row['sku']
       inbound = row['afn-inbound-shipped-quantity'].to_i
       reserved = row['afn-reserved-quantity'].to_i
       total = row['afn-warehouse-quantity'].to_i
+      title = row['product-name'].slice(0..20)
 
-#     t.integer "supply_days"
+      supply_days = 0
 
       new_inventory = Inventory.new({location: location, date: date, available: available, sku: sku, reserved: reserved, total: total })
       if Product.find_by(sku: new_inventory.sku)
           product = Product.find_by(sku: new_inventory.sku)
           new_inventory.product_id = product.id
-          new_inventory.product_type_id = product.product_type_id
       else #if the product does not exist
-        if ProductType.find_by(title: "MISC") then ptype = ProductType.find_by(title: "MISC") else ptype = ProductType.create({title: "MISC"}) end
-        new_inventory.product_type_id = ptype.id
-        product = Product.create({product_type_id: ptype.id, title: row['product-name'], sku: new_inventory.sku, color_size: "unkown"})
+        if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+        product = Product.create({product_type_id: ptype.id, supply_days: supply_days, title: title, sku: new_inventory.sku, color_size: "unkown"})
         new_inventory.product_id = product.id
       end
       if new_inventory.save

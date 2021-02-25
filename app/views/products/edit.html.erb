@@ -1,6 +1,7 @@
 <div class="container w-50">
 <p> Edit Child Product Information </p>
   <%= simple_form_for [@product_type, @product] do |f| %>
+  <%= f.input :product_type_id, label: "Parent Product" %>
     <%= f.input :title %>
     <%= f.input :asin %>
     <%= f.input :color_size %>

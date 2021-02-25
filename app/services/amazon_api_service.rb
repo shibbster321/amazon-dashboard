@@ -18,16 +18,6 @@ class AmazonApiService
     JSON.parse(response.body)
   end
 
-  def get_inventory
-    headers = "{'details': true, 'granularityType': 'Marketplace', 'granularityId': string, 'marketplaceIds': [#{ENV['MARKETPLACE_ID']}] }"
-    response = Typhoeus::Request.get(
-      "https://sellingpartnerapi-na.amazon.com#{@url}",
-      headers: get_signed_headers_for_get_request(@url)
-    )
-    JSON.parse(response.body)
-
-  end
-
   def get_inventory_report
     body = "{'reportType': '#{@report_type}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
     #### GENERATED THE REPORT
@@ -38,7 +28,7 @@ class AmazonApiService
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
     puts report_id
-    60.times do
+    30.times do
       sleep 1
       print "."
     end
@@ -49,6 +39,11 @@ class AmazonApiService
       headers: get_signed_headers_for_get_request(url)
     )
     puts "got document id"
+    10.times do
+      sleep 1
+      print "."
+    end
+
     report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
     ### GET THE REPORT DOCUMENT
     url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
@@ -57,6 +52,10 @@ class AmazonApiService
       headers: get_signed_headers_for_get_request(url)
     )
     puts "got document"
+    30.times do
+      sleep 1
+      print "."
+    end
     # Reponse gives us report document encryption details
     get_report_document_data = JSON.parse(get_report_document.body)["payload"]
     # p get_report_document_data["encryptionDetails"]
@@ -81,7 +80,7 @@ class AmazonApiService
     )
     report_id = JSON.parse(response.body)["payload"]["reportId"]
     puts report_id
-    60.times do
+    30.times do
       sleep 1
       print "."
     end
@@ -92,6 +91,10 @@ class AmazonApiService
       headers: get_signed_headers_for_get_request(url)
     )
     puts "got document id"
+    10.times do
+      sleep 1
+      print "."
+    end
     report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
     ### GET THE REPORT DOCUMENT
     url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
@@ -100,6 +103,10 @@ class AmazonApiService
       headers: get_signed_headers_for_get_request(url)
     )
     puts "got document"
+    10.times do
+      sleep 1
+      print "."
+    end
     # Reponse gives us report document encryption details
     get_report_document_data = JSON.parse(get_report_document.body)["payload"]
     # p get_report_document_data["encryptionDetails"]

@@ -12,11 +12,12 @@ class PagesController < ApplicationController
   def amzn
     authorize Sale
     if params[:query][:start_date].match(/^\d{4}-\d{2}-\d{2}/) && params[:query][:end_date].match(/^\d{4}-\d{2}-\d{2}/)
+      flash.now[:notice] = 'This may take a minute...'
       Sale.fetch_amzn_sales(params[:query][:start_date], params[:query][:end_date])
       flash.now[:notice] = 'Amzn Sales succesfully imported!'
-      render "api"
+      redirect_to api_path
     else
-      flash.now[:notice] = 'Your formatting is inccorect, please try again!'
+      flash.now[:alert] = 'Your formatting is inccorect, please try again!'
       render "api"
     end
   end
@@ -24,13 +25,10 @@ class PagesController < ApplicationController
   def amzn_inv
     authorize Inventory
     flash.now[:notice] = 'This may take a minute...'
-    if Inventory.fetch_amzn_inventory
-      flash.now[:notice] = 'Amazon Inventory succesfully updated!'
-      render "api"
-    else
-      flash.now[:notice] = 'Something went wrong, please try again!'
-      render "api"
-    end
+    Inventory.fetch_amzn_inventory
+    flash.now[:notice] = 'Amazon Inventory succesfully updated!'
+    redirect_to api_path
+
   end
 
   def etsycall
@@ -55,15 +53,17 @@ class PagesController < ApplicationController
       sku = sale["product_data"]["sku"]
       order_id = sale["transaction_id"].to_s
       store = "etsy"
+      title = sale["title"].slice(0..20)
       new = Sale.new({store: store, date: date, fba_fee: 0.0, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt })
       if Product.find_by(sku: new.sku)
           product = Product.find_by(sku: new.sku)
           new.product_id = product.id
           new.product_type_id = product.product_type_id
         else #if the product does not exist
-          if ProductType.find_by(title: "MISC") then ptype = ProductType.find_by(title: "MISC") else ptype = ProductType.create({title: "MISC"}) end
+          if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+
           new.product_type_id = ptype.id
-          product = Product.create({product_type_id: ptype.id, title: sale["title"], sku: new.sku, asin: "unkown", color_size: "unkown"})
+          product = Product.create({product_type_id: ptype.id, title: title, sku: new.sku, asin: "unkown", color_size: "unkown"})
           new.product_id = product.id
         end
         if new.save
@@ -73,7 +73,7 @@ class PagesController < ApplicationController
         end
       end
     flash.now[:notice] = 'Etsy data succesfully imported!'
-    render "api"
+    redirect_to api_path
   end
 
   private

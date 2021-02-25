@@ -6,7 +6,7 @@
   <table class="table my-2">
     <thead>
       <tr>
-        <th class="text-center" scope="col">#</th>
+        <th class="text-center pl-3" scope="col">ID</th>
         <th class="text-center" scope="col">Image</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "title"%> <p class="carrot">▽</p></div> </th>
         <th scope="col"> MfgLead Time</th>
@@ -20,8 +20,7 @@
       <% i = 0 %>
       <% @product_types.each do |item| %>
         <tr>
-        <% i += 1 %>
-          <th class="text-center" scope="row"><%= i %></th>
+          <td class="text-center" scope="row"><%= item.id %></td>
           <td class="text-center">
             <% if item.photo.attached? %>
               <%= cl_image_tag item.photo.key, class: "icon-square" %>
