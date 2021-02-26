@@ -53,7 +53,7 @@
           </td>
           <td><%= link_to inventory.product.title, product_type_inventories_path(inventory.product.product_type_id), class: "btn-simple" %> - <%= inventory.product.color_size %></td>
           <td><%= inventory.location %></td>
-          <td class= <%= if inventory.supply_days<= inventory.product.product_type.lead_time then "bg-red" else "" end %>>
+          <td class= <%= if inventory.supply_days <= (inventory.product.product_type.lead_time ?  inventory.product.product_type.lead_time : 0) then "bg-red" else "" end %>>
             <%= inventory.supply_days %>
           </td>
           <td><%= inventory.available %></td>

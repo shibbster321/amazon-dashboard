@@ -14,7 +14,7 @@ class SalesController < ApplicationController
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
         ptype = inventory.product.product_type
-        if inventory.supply_days < ptype.lead_time
+        if inventory.supply_days < (ptype.lead_time ? ptype.lead_type : 0)
           @inventory_warning +=1
         end
       end
