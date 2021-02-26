@@ -31,4 +31,12 @@ class SalePolicy < ApplicationPolicy
     user.status == "admin"
   end
 
+    def edit_data?
+    user.status == "admin"
+  end
+
+    def destroy_data?
+    user.status == "admin"
+  end
+
 end

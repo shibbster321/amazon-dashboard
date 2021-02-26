@@ -10,6 +10,9 @@ Rails.application.routes.draw do
 
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
   resources :permissions, only: [:index, :edit, :update, :destroy]
+
+  get '/edit_data/', to: 'sales#edit_data', as: 'edit_data'
+  delete '/destroy_data/', to: 'sales#destroy_data', as: 'destroy_data'
   resources :product_types do
     get '/inventories/', to: 'inventories#subindex', as: 'inventories'
     get '/sales/', to: 'sales#subindex', as: 'sales'

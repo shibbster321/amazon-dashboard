@@ -1,0 +1,10 @@
+<div class="container">
+  <h1>Delete Sales Data</h1>
+  <h4>What dates Amazon Data</h4>
+    <%= simple_form_for :query, url: destroy_data_path, :method => :delete do |f| %>
+      <%= f.input :store, label: 'Choose data from which store', :collection => %w[amazon etsy], input_html: { class: "col-md-4"} %>
+      <%= f.input :start_date, label: 'Start Date', placeholder: 'e.g. 2021-01-01', input_html: { class: "col-md-4"} %>
+      <%= f.input :end_date, label: 'End Date', placeholder: 'e.g. 2021-03-05', input_html: { class: "col-md-4"} %>
+      <%= f.submit :submit, class: "btn btn-secondary ml-1", data: {confirm: "Are you sure you want to delete data??"} %>
+    <% end %>
+</div>

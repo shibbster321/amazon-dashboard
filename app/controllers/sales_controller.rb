@@ -1,5 +1,5 @@
 class SalesController < ApplicationController
-  after_action :verify_authorized, only: [:index, :subindex]
+  after_action :verify_authorized, only: [:index, :subindex, :destroy, :edit_data]
   skip_after_action :verify_policy_scoped, only: :index
 
   def index
@@ -99,6 +99,29 @@ class SalesController < ApplicationController
     elsif params[:range] == "month"
       @date_range = @most_recent_date - 30.days
     end
+  end
+
+  def edit_data
+    authorize Sale
+  end
+
+  def destroy_data
+    authorize Sale
+      if params[:query][:start_date].match(/^\d{4}-\d{2}-\d{2}/) && params[:query][:end_date].match(/^\d{4}-\d{2}-\d{2}/)
+        if ["amazon", "etsy"].include? params[:query][:store]
+          flash.now[:notice] = 'This may take a minute...'
+          Sale.where("date >= ? and date <= ? and store = ?", params[:query][:start_date],params[:query][:end_date],params[:query][:store]).destroy_all
+          redirect_to edit_data_path
+          flash.now[:alert] = 'Data deleted succesfully'
+        else
+          flash.now[:alert] = 'You must choose a store source for the Data'
+          render "edit_data"
+        end
+    else
+      flash.now[:alert] = 'Your formatting is inccorect, please try again!'
+      render "edit_data"
+    end
+
   end
 
   private

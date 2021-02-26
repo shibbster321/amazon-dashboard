@@ -35,27 +35,31 @@ require 'date'
 #  end
 # end
 
-# Inventory.destroy_all
-puts "destryed Inventory seeds"
-table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'inventory_data.csv')), headers: true)
-# Create Inventory events
-table.each do |row|
-  if row[0].to_date then "" else puts "date format must be year-month-day" end
-  new = Inventory.new({date: row[0].to_date, location: "avid", sku: row[4], inbound: row[14].to_i, available: row[15].to_i, supply_days: row[21].to_i, total: row[13].to_i})
-  puts "new inventory made"
-  product = Product.find_by(sku: new.sku)
-  puts "product_id identified"
-  new.product_id = product.id
-  if new.save
-    puts new.sku + " saved"
-    new.processing = new.total - new.inbound - new.available
-    new.save
-    puts "processing added"
-  else
-    puts "product already exists or error"
-  end
+Inventory.destroy_all
+puts "all inventory destroyed"
+puts "creating inventory event"
+new = Inventory.new({date: "2021-01-01".to_date, location: "avid", sku: Product.first.sku, inbound: 5, available: 5, supply_days: 5, total: 5, reserved: 5})
+new.product_id = Product.first.id
+new.save
+# table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'inventory_data.csv')), headers: true)
+# # Create Inventory events
+# table.each do |row|
+#   if row[0].to_date then "" else puts "date format must be year-month-day" end
+#   new = Inventory.new({date: row[0].to_date, location: "avids", sku: row[4], inbound: row[14].to_i, available: row[15].to_i, supply_days: row[21].to_i, total: row[13].to_i})
+#   puts "new inventory made"
+#   product = Product.find_by(sku: new.sku)
+#   puts "product_id identified"
+#   new.product_id = product.id
+#   if new.save
+#     puts new.sku + " saved"
+#     new.reserved = new.total - new.inbound - new.available
+#     new.save
+#     puts "processing added"
+#   else
+#     puts "product already exists or error"
+#   end
 
-end
+# end
 
 
 # Sale.destroy_all
@@ -64,7 +68,7 @@ end
 # # Create sale events
 # table.each do |row|
 #   if row['type'] == "Order"
-#     new = Sale.new({date: row[0].to_time, orderid: row['order id'], sku: row['sku'].to_s, qty: row['quantity'].to_i, sale_amt: row['product sales'].to_i, selling_fee: row['selling fees'].to_f, fba_fee: row['fba fees'].to_f, total: row['total'].to_f})
+#     new = Sale.new({date: row[0].to_time, orderid: row['order id'], sku: row['sku'].to_s, qty: row['quantity'].to_i, sale_amt: row['product sales'].to_i, fba_fee: row['fba fees'].to_f, total: row['total'].to_f})
 #     if Product.find_by(sku: new.sku)
 #       product = Product.find_by(sku: new.sku)
 #       new.product_id = product.id

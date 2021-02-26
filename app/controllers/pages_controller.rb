@@ -72,8 +72,8 @@ class PagesController < ApplicationController
           puts "sale already exists or other error"
         end
       end
-    flash.now[:notice] = 'Etsy data succesfully imported!'
     redirect_to api_path
+    flash.now[:notice] = 'Etsy data succesfully imported!'
   end
 
   private
