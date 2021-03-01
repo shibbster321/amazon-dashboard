@@ -35,12 +35,50 @@ require 'date'
 #  end
 # end
 
-Inventory.destroy_all
-puts "all inventory destroyed"
-puts "creating inventory event"
-new = Inventory.new({date: "2021-01-01".to_date, location: "avid", sku: Product.first.sku, inbound: 5, available: 5, supply_days: 5, total: 5, reserved: 5})
+# Inventory.destroy_all
+# puts "all inventory destroyed"
+# puts "creating inventory event"
+new = Inventory.new({date: "2021-01-01".to_date, location: "amazon", sku: Product.first.sku, inbound: 5, available: 5, supply_days: 5, total: 5, reserved: 5})
 new.product_id = Product.first.id
-new.save
+if new.save
+  "seed inventory saved"
+else
+  puts "error or alredy exists"
+end
+
+new_sale = Sale.new({store: "amazon", date: "2021-01-01".to_date, orderid: "order_id", sku: Product.first.sku, qty: 1, sale_amt: 20.00 })
+if Product.find_by(sku: new_sale.sku)
+    product = Product.find_by(sku: new_sale.sku)
+    new_sale.product_id = product.id
+    new_sale.product_type_id = product.product_type_id
+else #if the product does not exist
+  if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+  new_sale.product_type_id = ptype.id
+  product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
+  new_sale.product_id = product.id
+end
+if new_sale.save
+  puts new_sale.sku + " sale saved"
+else
+  puts "sale already exists or other error"
+end
+
+new_sale = Sale.new({store: "etsy", date: "2021-01-01".to_date, orderid: "order_id", sku: Product.first.sku, qty: 1, sale_amt: 10.00 })
+if Product.find_by(sku: new_sale.sku)
+    product = Product.find_by(sku: new_sale.sku)
+    new_sale.product_id = product.id
+    new_sale.product_type_id = product.product_type_id
+else #if the product does not exist
+  if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+  new_sale.product_type_id = ptype.id
+  product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
+  new_sale.product_id = product.id
+end
+if new_sale.save
+  puts new_sale.sku + " sale saved"
+else
+  puts "sale already exists or other error"
+end
 # table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'inventory_data.csv')), headers: true)
 # # Create Inventory events
 # table.each do |row|

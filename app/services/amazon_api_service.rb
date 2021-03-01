@@ -39,36 +39,42 @@ class AmazonApiService
       headers: get_signed_headers_for_get_request(url)
     )
     puts "got document id"
+
     10.times do
       sleep 1
       print "."
     end
+    # check if document is created correctly
+    if report_document_id = JSON.parse(get_report.body)["payload"]["processingStatus"] == "FATAL"
+      puts "processing status fatal for get_report"
+      # report_document_id = Apicall.where(type: "inventory").last.report_document_id
+    else
+      report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
+      puts report_document_id
+      ### GET THE REPORT DOCUMENT
+      url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
+      get_report_document = Typhoeus.get(
+        url,
+        headers: get_signed_headers_for_get_request(url)
+      )
+      puts "got document"
+      30.times do
+        sleep 1
+        print "."
+      end
+      # Reponse gives us report document encryption details
+      get_report_document_data = JSON.parse(get_report_document.body)["payload"]
 
-    report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
-    ### GET THE REPORT DOCUMENT
-    url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
-    get_report_document = Typhoeus.get(
-      url,
-      headers: get_signed_headers_for_get_request(url)
-    )
-    puts "got document"
-    30.times do
-      sleep 1
-      print "."
+      cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+      puts "getting cipher details"
+      cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
+      cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
+      encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
+      document = cipher.update(encrypted_document) + cipher.final
+      # That gives us kind of a CSV of sale data that we need to parse
+      puts "document is ciphered"
+      CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
     end
-    # Reponse gives us report document encryption details
-    get_report_document_data = JSON.parse(get_report_document.body)["payload"]
-    # p get_report_document_data["encryptionDetails"]
-    # Encryption details we use to decrypt the document content
-    cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
-    puts "getting cipher details"
-    cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
-    cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
-    encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
-    document = cipher.update(encrypted_document) + cipher.final
-    # That gives us kind of a CSV of sale data that we need to parse
-    puts "document is ciphered"
-    CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
   def get_report
     body = "{'reportType': '#{@report_type}','dataStartTime': '#{@start_date}','dataEndTime': '#{@end_date}','marketplaceIds': [#{ENV['MARKETPLACE_ID']}]}"
@@ -95,31 +101,34 @@ class AmazonApiService
       sleep 1
       print "."
     end
-    report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
-    ### GET THE REPORT DOCUMENT
-    url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
-    get_report_document = Typhoeus.get(
-      url,
-      headers: get_signed_headers_for_get_request(url)
-    )
-    puts "got document"
-    10.times do
-      sleep 1
-      print "."
+    if JSON.parse(get_report.body)["payload"]["processingStatus"] == "FATAL"
+      puts "processing status fatal for get_report"
+    else
+      report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
+      puts report_document_id
+      url = "https://sellingpartnerapi-na.amazon.com/reports/2020-09-04/documents/#{report_document_id}"
+      get_report_document = Typhoeus.get(
+        url,
+        headers: get_signed_headers_for_get_request(url)
+      )
+      puts "got document"
+      10.times do
+        sleep 1
+        print "."
+      end
+
+      get_report_document_data = JSON.parse(get_report_document.body)["payload"]
+
+      cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
+      puts "getting cipher details"
+      cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
+      cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
+      encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
+      document = cipher.update(encrypted_document) + cipher.final
+      # That gives us kind of a CSV of sale data that we need to parse
+      puts "document is ciphered"
+      csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
     end
-    # Reponse gives us report document encryption details
-    get_report_document_data = JSON.parse(get_report_document.body)["payload"]
-    # p get_report_document_data["encryptionDetails"]
-    # Encryption details we use to decrypt the document content
-    cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
-    puts "getting cipher details"
-    cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
-    cipher.iv = Base64.decode64(get_report_document_data["encryptionDetails"]["initializationVector"])
-    encrypted_document = Typhoeus.get(get_report_document_data["url"]).body
-    document = cipher.update(encrypted_document) + cipher.final
-    # That gives us kind of a CSV of sale data that we need to parse
-    puts "document is ciphered"
-    csv = CSV.parse(document, headers: true, row_sep: "\n", col_sep: "\t", quote_char: nil)
   end
 
   private

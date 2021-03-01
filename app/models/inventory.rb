@@ -14,7 +14,7 @@ class Inventory < ApplicationRecord
     # start_date: "2021-01-01", end_date: "2021-01-31"
     csv = AmazonApiService.new(attributes).get_inventory_report
 
-    CsvConverter.new(csv).to_inventory
+    CsvConverter.new(csv).to_inventory if csv
   end
 end
 

@@ -13,8 +13,15 @@ class Sale < ApplicationRecord
     last_month = most_recent_date - 30.days
     Sale.where(["date > ? and date < ?", last_month, most_recent_date])
   end
- # start_date = "2021-02-01"
- # end_date = "2021-02-20"
+  def self.weekly_sale_of(product_id)
+    if Product.find_by_id(product_id)
+      product = Product.find_by_id(product_id)
+      most_recent_date = Sale.where(product_id: product.id).maximum('date') if Sale.where(product_id: product.id).maximum('date')
+      sale = Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count if Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count
+    else
+      puts "not a product id"
+    end
+  end
   def self.fetch_amzn_sales(start_date, end_date)
     puts "fetching amazon sales"
     attributes = {
@@ -23,8 +30,7 @@ class Sale < ApplicationRecord
       start_date: start_date, end_date: end_date
       }
     csv = AmazonApiService.new(attributes).get_report
-    puts "csv report created, now parsing"
-    CsvConverter.new(csv).to_sales
+    CsvConverter.new(csv).to_sales if csv
   end
 
   def update_sale_event
