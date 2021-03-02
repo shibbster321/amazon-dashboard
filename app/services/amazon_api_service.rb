@@ -3,6 +3,8 @@ require "csv"
 # GET_AMAZON_FULFILLED_SHIPMENTS_DATA_GENERAL
 
 class AmazonApiService
+  class ProcessingError < StandardError; end
+
   def initialize(attributes = {})
     @url         = attributes[:url]
     @report_type = attributes[:report_type]
@@ -10,7 +12,7 @@ class AmazonApiService
     @end_date    = attributes[:end_date]
     set_access_token
   end
-  def get_products
+  def get_all_reports
     response = Typhoeus::Request.get(
       "https://sellingpartnerapi-na.amazon.com#{@url}",
       headers: get_signed_headers_for_get_request(@url)
@@ -47,6 +49,7 @@ class AmazonApiService
     # check if document is created correctly
     if report_document_id = JSON.parse(get_report.body)["payload"]["processingStatus"] == "FATAL"
       puts "processing status fatal for get_report"
+      raise ProcessingError
       # report_document_id = Apicall.where(type: "inventory").last.report_document_id
     else
       report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
@@ -103,6 +106,7 @@ class AmazonApiService
     end
     if JSON.parse(get_report.body)["payload"]["processingStatus"] == "FATAL"
       puts "processing status fatal for get_report"
+      raise ProcessingError
     else
       report_document_id = JSON.parse(get_report.body)["payload"]["reportDocumentId"]
       puts report_document_id

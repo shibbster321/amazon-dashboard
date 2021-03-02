@@ -12,12 +12,14 @@ class PagesController < ApplicationController
   def amzn
     authorize Sale
     if params[:query][:start_date].match(/^\d{4}-\d{2}-\d{2}/) && params[:query][:end_date].match(/^\d{4}-\d{2}-\d{2}/)
-      if Sale.fetch_amzn_sales(params[:query][:start_date], params[:query][:end_date])
-        flash[:notice] = 'Amazon sales data succesfully imported!'
-      else
-        flash[:alert] = 'Problem importing sales data...'
+      begin
+        Sale.fetch_amzn_sales(params[:query][:start_date], params[:query][:end_date])
+        redirect_to api_path, notice: "Successfully imported sales Data!"
+      rescue AmazonApiService::ProcessingError
+        redirect_to api_path, notice: "Error occured with processing amazon api fetch request"
+      rescue CsvConverter::ProcessingError
+        redirect_to api_path, notice: "Error occured with csv processing"
       end
-      redirect_to api_path
     else
       render "api"
       flash.now[:alert] = 'Your formatting is inccorect, please try again!'
@@ -26,12 +28,14 @@ class PagesController < ApplicationController
 
   def amzn_inv
     authorize Inventory
-    if Inventory.fetch_amzn_inventory == "success"
-      flash[:notice] = 'Amazon Inventory succesfully updated!'
-    else
-      flash[:alert] = 'Problem loading inventory...'
+    begin
+      Inventory.fetch_amzn_inventory
+      redirect_to inventories_path
+    rescue AmazonApiService::ProcessingError
+      redirect_to api_path, notice: "Error occured with processing amazon api fetch request"
+    rescue CsvConverter::ProcessingError
+      redirect_to api_path, notice: "Error occured with csv processing"
     end
-    redirect_to api_path
   end
 
   def etsycall

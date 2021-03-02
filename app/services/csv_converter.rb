@@ -2,6 +2,7 @@ require "csv"
 require "date"
 
 class CsvConverter
+  class ProcessingError < StandardError; end
   def initialize(csv)
     @csv = csv
   end
@@ -53,7 +54,7 @@ class CsvConverter
           if Sale.weekly_sale_of(product.id)
             new_inventory.supply_days = available / Sale.weekly_sale_of(product.id) * 7
           else
-            new_inventory.supply_days = available / 1* 7
+            new_inventory.supply_days = available / 1 * 7
           end
       else #if the product does not exist
         if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
@@ -62,7 +63,7 @@ class CsvConverter
           if Sale.weekly_sale_of(product.id)
             new_inventory.supply_days = available / Sale.weekly_sale_of(product.id) * 7
           else
-            new_inventory.supply_days = available / 1* 7
+            new_inventory.supply_days = available / 1 * 7
           end
       end
       if new_inventory.save

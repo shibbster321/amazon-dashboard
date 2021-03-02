@@ -17,7 +17,11 @@ class Sale < ApplicationRecord
     if Product.find_by_id(product_id)
       product = Product.find_by_id(product_id)
       most_recent_date = Sale.where(product_id: product.id).maximum('date') if Sale.where(product_id: product.id).maximum('date')
-      sale = Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count if Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count
+      if most_recent_date
+        sale = Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count if Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count
+      else
+        puts "no sales"
+      end
     else
       puts "not a product id"
     end
