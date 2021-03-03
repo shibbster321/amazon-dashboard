@@ -67,7 +67,7 @@ class AmazonApiService
       end
       # Reponse gives us report document encryption details
       get_report_document_data = JSON.parse(get_report_document.body)["payload"]
-
+      raise ProcessingError if get_report_document_data.nil?
       cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
       puts "getting cipher details"
       cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])
@@ -122,7 +122,7 @@ class AmazonApiService
       end
 
       get_report_document_data = JSON.parse(get_report_document.body)["payload"]
-
+      raise ProcessingError if get_report_document_data.nil?
       cipher = OpenSSL::Cipher::AES256.new(:CBC).decrypt
       puts "getting cipher details"
       cipher.key = Base64.decode64(get_report_document_data["encryptionDetails"]["key"])

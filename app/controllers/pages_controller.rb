@@ -16,9 +16,9 @@ class PagesController < ApplicationController
         Sale.fetch_amzn_sales(params[:query][:start_date], params[:query][:end_date])
         redirect_to api_path, notice: "Successfully imported sales Data!"
       rescue AmazonApiService::ProcessingError
-        redirect_to api_path, notice: "Error occured with processing amazon api fetch request"
+        redirect_to api_path, alert: "Error occured with processing amazon api fetch request"
       rescue CsvConverter::ProcessingError
-        redirect_to api_path, notice: "Error occured with csv processing"
+        redirect_to api_path, alert: "Error occured with csv processing"
       end
     else
       render "api"
@@ -32,9 +32,9 @@ class PagesController < ApplicationController
       Inventory.fetch_amzn_inventory
       redirect_to inventories_path
     rescue AmazonApiService::ProcessingError
-      redirect_to api_path, notice: "Error occured with processing amazon api fetch request"
+      redirect_to api_path, alert: "Error occured with processing amazon api fetch request"
     rescue CsvConverter::ProcessingError
-      redirect_to api_path, notice: "Error occured with csv processing"
+      redirect_to api_path, alert: "Error occured with csv processing"
     end
   end
 
@@ -62,25 +62,23 @@ class PagesController < ApplicationController
       store = "etsy"
       title = sale["title"].slice(0..20)
       new = Sale.new({store: store, date: date, fba_fee: 0.0, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt })
-      stop
       if Product.find_by(sku: new.sku)
-          product = Product.find_by(sku: new.sku)
-          new.product_id = product.id
-          new.product_type_id = product.product_type_id
-        else #if the product does not exist
-          if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
-          new.product_type_id = ptype.id
-          product = Product.create({product_type_id: ptype.id, title: title, sku: new.sku, asin: "unkown", color_size: "unkown"})
-          new.product_id = product.id
-        end
-        if new.save
-          puts new.sku + " sale saved"
-        else
-          puts "sale already exists or other error"
-        end
+        product = Product.find_by(sku: new.sku)
+        new.product_id = product.id
+        new.product_type_id = product.product_type_id
+      else #if the product does not exist
+        if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+        new.product_type_id = ptype.id
+        product = Product.create({product_type_id: ptype.id, title: title, sku: new.sku, asin: "unkown", color_size: "unkown"})
+        new.product_id = product.id
       end
-    redirect_to api_path
-    flash.now[:notice] = 'Etsy data succesfully imported!'
+      if new.save
+        puts new.sku + " sale saved"
+      else
+        puts "sale already exists or other error"
+      end
+    end
+    redirect_to api_path, notice: "Import Succesfull"
   end
 
   private

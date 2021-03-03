@@ -46,39 +46,7 @@ else
   puts "error or alredy exists"
 end
 
-new_sale = Sale.new({store: "amazon", date: "2021-01-01".to_date, orderid: "order_id", sku: Product.first.sku, qty: 1, sale_amt: 20.00 })
-if Product.find_by(sku: new_sale.sku)
-    product = Product.find_by(sku: new_sale.sku)
-    new_sale.product_id = product.id
-    new_sale.product_type_id = product.product_type_id
-else #if the product does not exist
-  if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
-  new_sale.product_type_id = ptype.id
-  product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
-  new_sale.product_id = product.id
-end
-if new_sale.save
-  puts new_sale.sku + " sale saved"
-else
-  puts "sale already exists or other error"
-end
 
-new_sale = Sale.new({store: "etsy", date: "2021-01-01".to_date, orderid: "order_id", sku: Product.first.sku, qty: 1, sale_amt: 10.00 })
-if Product.find_by(sku: new_sale.sku)
-    product = Product.find_by(sku: new_sale.sku)
-    new_sale.product_id = product.id
-    new_sale.product_type_id = product.product_type_id
-else #if the product does not exist
-  if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
-  new_sale.product_type_id = ptype.id
-  product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
-  new_sale.product_id = product.id
-end
-if new_sale.save
-  puts new_sale.sku + " sale saved"
-else
-  puts "sale already exists or other error"
-end
 # table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'inventory_data.csv')), headers: true)
 # # Create Inventory events
 # table.each do |row|
@@ -101,32 +69,32 @@ end
 
 
 # Sale.destroy_all
-# puts "destryed sale seeds"
-# table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', 'sales_data.csv')), headers: true)
-# # Create sale events
-# table.each do |row|
-#   if row['type'] == "Order"
-#     new = Sale.new({date: row[0].to_time, orderid: row['order id'], sku: row['sku'].to_s, qty: row['quantity'].to_i, sale_amt: row['product sales'].to_i, fba_fee: row['fba fees'].to_f, total: row['total'].to_f})
-#     if Product.find_by(sku: new.sku)
-#       product = Product.find_by(sku: new.sku)
-#       new.product_id = product.id
-#       new.product_type_id = product.product_type_id
-#     else
-#       pt = ProductType.create({title: row[5]})
-#       new.product_type_id = pt.id
-#       product = Product.create({product_type_id: pt.id, sku: new.sku, asin: "unkown", color_size: "unkown"})
-#       new.product_id = product.id
-#     end
-#     if new.save
-#       puts new.sku + " sale saved"
-
-#     else
-#       puts "sale already exists or error"
-#     end
-#   else
-#     puts "not an order"
-#   end
-# end
+puts "Importing Data"
+table = CSV.parse(File.read(File.join(Rails.root, 'app', 'assets', 'data', '2_years_of_sales.csv')), headers: true)
+# Create sale events
+table.each do |row|
+  if row['type'] == "Order"
+    title = row['description'].slice(0..20)
+    new_sale = Sale.new({store: "amazon", date: row[0].to_time, orderid: row['order id'], sku: row['sku'].to_s, qty: row['quantity'].to_i, sale_amt: row['product sales'].to_f})
+    if Product.find_by(sku: new_sale.sku)
+        product = Product.find_by(sku: new_sale.sku)
+        new_sale.product_id = product.id
+        new_sale.product_type_id = product.product_type_id
+    else #if the product does not exist
+      if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
+      new_sale.product_type_id = ptype.id
+      product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
+      new_sale.product_id = product.id
+    end
+    if new_sale.save
+      puts new_sale.sku + " sale saved"
+    else
+      puts "sale already exists or other error"
+    end
+  else
+    ""
+  end
+end
 
 
 

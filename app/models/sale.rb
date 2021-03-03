@@ -16,7 +16,7 @@ class Sale < ApplicationRecord
   def self.weekly_sale_of(product_id)
     if Product.find_by_id(product_id)
       product = Product.find_by_id(product_id)
-      most_recent_date = Sale.where(product_id: product.id).maximum('date') if Sale.where(product_id: product.id).maximum('date')
+      most_recent_date = Sale.where("store = ? and product_id = ?", "amazon", product.id).maximum('date') if Sale.where("store = ? and product_id = ?", "amazon", product.id).maximum('date')
       if most_recent_date
         sale = Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count if Sale.where("date >= ? and product_id = ?", most_recent_date - 7.days, product.id).count
       else
