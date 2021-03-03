@@ -48,17 +48,17 @@ class CsvConverter
       title = row['product-name'].slice(0..20)
 
       new_inventory = Inventory.new({location: location, date: date, available: available, sku: sku, reserved: reserved, total: total })
-      if Product.find_by(sku: new_inventory.sku)
-          product = Product.find_by(sku: new_inventory.sku)
+      if product = Product.find_by(sku: new_inventory.sku)
           new_inventory.product_id = product.id
           if Sale.weekly_sale_of(product.id)
+            puts Sale.weekly_sale_of(product.id)
             new_inventory.supply_days = available / Sale.weekly_sale_of(product.id) * 7
           else
             new_inventory.supply_days = available / 1 * 7
           end
       else #if the product does not exist
         if ProductType.find_by(title: title) then ptype = ProductType.find_by(title: title) else ptype = ProductType.create({title: title}) end
-        product = Product.create({product_type_id: ptype.id, supply_days: supply_days, title: title, sku: new_inventory.sku, color_size: "unkown"})
+        product = Product.create({product_type_id: ptype.id, title: title, sku: new_inventory.sku, color_size: "unkown"})
         new_inventory.product_id = product.id
           if Sale.weekly_sale_of(product.id)
             new_inventory.supply_days = available / Sale.weekly_sale_of(product.id) * 7

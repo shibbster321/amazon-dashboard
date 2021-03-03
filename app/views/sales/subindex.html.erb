@@ -29,13 +29,13 @@
         </div>
       </div>
       <h5 class="text-center">Inventory</h5>
-      <div label="inventory warning" class="big-card">
+      <div label="inventory warning" class="big-card text-center">
         <% if @inventory_warning > 1%>
-          <h5 class="btn btn-warning m-0"> <%= @inventory_warning%> inventories are running low</h5>
+          <%= link_to  "#{@inventory_warning} inventories are running low", product_type_inventories_path(@product_type.id), class: "btn btn-warning m-0" %>
         <% elsif @inventory_warning == 1 %>
-          <h5 class="btn btn-info m-0"> <%= @inventory_warning%> inventory may have a problem</h5>
+          <%= link_to  "#{@inventory_warning} inventory item is running low", product_type_inventories_path(@product_type.id), class: "btn btn-info m-0" %>
         <% else %>
-          <h5 class="btn btn success m-0"> Inventory Supply is healthy</h5>
+         <%= link_to "Inventory is healthy", product_type_inventories_path(@product_type.id), class: "btn btn-success m-0" %>
         <% end %>
       </div>
     </div>
