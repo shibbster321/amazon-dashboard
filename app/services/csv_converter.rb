@@ -27,6 +27,7 @@ class CsvConverter
         product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
         new_sale.product_id = product.id
       end
+      puts new_sale
       if new_sale.save
         puts new_sale.sku + " sale saved"
       else

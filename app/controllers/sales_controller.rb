@@ -4,26 +4,26 @@ class SalesController < ApplicationController
 
   def index
     authorize Sale
-    @all_sales = Sale.order(params[:sort]).limit(10)
+    @all_sales = Sale.order("date DESC").limit(10)
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
     @store_list = ["all", "amazon", "etsy"]
     # Date range
-    @most_recent_date = Sale.maximum('date') ? Sale.maximum('date') : Date.today
-    @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt) if Sale.count > 1
-    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 30.days).sum(:sale_amt) if Sale.count > 1
+    @most_recent_date = Sale.maximum('date')
+    @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt)
+    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 28.days).sum(:sale_amt)
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
         ptype = inventory.product.product_type
-        if inventory.supply_days <
+        if inventory.supply_days < ptype.lead_time
           @inventory_warning +=1
         end
       end
     # set date range for charts
-    @date_range = @most_recent_date - 30.days
+    @date_range = @most_recent_date - 28.days
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 30.days
+      @date_range = @most_recent_date - 28.days
     end
 
     # data for sales by store
@@ -60,7 +60,7 @@ class SalesController < ApplicationController
   def subindex
     authorize Sale
     @most_recent_date = Sale.maximum('date')
-    @date_range = @most_recent_date - 30.days
+    @date_range = @most_recent_date - 28.days
 
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
     @store_list = ["all", "amazon", "etsy"]
@@ -74,7 +74,7 @@ class SalesController < ApplicationController
       end
     end
     @sales_this_week = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 7.days, @product_type.id).sum(:sale_amt)
-    @sales_this_month = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 30.days, @product_type.id).sum(:sale_amt)
+    @sales_this_month = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 28.days, @product_type.id).sum(:sale_amt)
 
     @stacked_data = []
     @product_sales_list = Product.where(product_type_id: @product_type.id).order(title: :desc)
@@ -92,12 +92,12 @@ class SalesController < ApplicationController
       end
     end
 
-    @all_sales = Sale.order(params[:sort]).where(product_type: @product_type.id).limit(10)
+    @all_sales = Sale.order(params[:sort]).where(product_type: @product_type.id).order("date DESC").limit(10)
     # Date range
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 30.days
+      @date_range = @most_recent_date - 28.days
     end
   end
 
