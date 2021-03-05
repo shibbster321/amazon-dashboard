@@ -10,7 +10,7 @@ class SalesController < ApplicationController
     # Date range
     @most_recent_date = Sale.maximum('date')
     @sales_this_week = Sale.where("date >= ?", @most_recent_date - 7.days).sum(:sale_amt)
-    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 28.days).sum(:sale_amt)
+    @sales_this_month = Sale.where("date >= ?", @most_recent_date - 30.days).sum(:sale_amt)
     @inventory_warning = 0
       Inventory.recent.each do |inventory|
         ptype = inventory.product.product_type
@@ -19,11 +19,11 @@ class SalesController < ApplicationController
         end
       end
     # set date range for charts
-    @date_range = @most_recent_date - 28.days
+    @date_range = @most_recent_date - 30.days
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 28.days
+      @date_range = @most_recent_date - 30.days
     end
 
     # data for sales by store
@@ -60,7 +60,7 @@ class SalesController < ApplicationController
   def subindex
     authorize Sale
     @most_recent_date = Sale.maximum('date')
-    @date_range = @most_recent_date - 28.days
+    @date_range = @most_recent_date - 30.days
 
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
     @store_list = ["all", "amazon", "etsy"]
@@ -74,7 +74,7 @@ class SalesController < ApplicationController
       end
     end
     @sales_this_week = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 7.days, @product_type.id).sum(:sale_amt)
-    @sales_this_month = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 28.days, @product_type.id).sum(:sale_amt)
+    @sales_this_month = Sale.where("date >= ? and product_type_id = ?", @most_recent_date - 30.days, @product_type.id).sum(:sale_amt)
 
     @stacked_data = []
     @product_sales_list = Product.where(product_type_id: @product_type.id).order(title: :desc)
@@ -97,7 +97,7 @@ class SalesController < ApplicationController
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 28.days
+      @date_range = @most_recent_date - 30.days
     end
   end
 
