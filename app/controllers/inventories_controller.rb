@@ -8,7 +8,7 @@ class InventoriesController < ApplicationController
     @product_type = ProductType.all
 
     @bar_data = []
-    @inventories.each do |item|
+    @inventories.where("supply_days < ?", 150).each do |item|
       @bar_data << ["#{item.product.title[0..15]}-#{item.product.color_size}", item.supply_days]
     end
 

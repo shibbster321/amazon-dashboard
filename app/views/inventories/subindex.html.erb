@@ -18,7 +18,7 @@
   </div>
   <div class=" container justify-content-between row p-0 m-0">
     <div class="big-card col-5">
-      <%= column_chart @bar_data , title: "Supply Days", ytitle: "Days" %>
+      <%= column_chart @bar_data , max: 150, title: "Supply Days", ytitle: "Days" %>
     </div>
     <div class="big-card col-6">
       <%= column_chart @location_data, stacked: true, legend: "right", title: "Inventory by Location", ytitle: "Quantity" %>

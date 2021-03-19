@@ -19,9 +19,9 @@
 
   <div class="big-card">
     <div class="d-flex justify-content-end">
-      <%= link_to "Re-order", {:sort => "supply_days"}, class: "#{'toggle-active' if params[:sort] == 'supply_days'} btn-clear rounded my-1 mx-1" %>
+      <%= link_to "sort", {:sort => "supply_days"}, class: "#{'toggle-active' if params[:sort] == 'supply_days'} btn-clear rounded my-1 mx-1" %>
     </div>
-    <%= column_chart @bar_data, title: "Amazon Supply Days", min: 0, max: 150, ytitle: "Days"%>
+    <%= column_chart @bar_data, title: "Showing only 'low' supply days", min: 0, max: 150, ytitle: "Days"%>
   </div>
     <div class="big-card mt-3">
     <%= column_chart @location_data, stacked: true, title: "Inventory by Location", ytitle: "Quantity"%>
