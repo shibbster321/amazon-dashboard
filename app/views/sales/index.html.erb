@@ -60,6 +60,7 @@
         <th class="text-center" scope="col">#</th>
         <th class="text-center" scope="col">Date</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Title", :sort => "product_type_id"%> <p class="carrot">▽</p></div> </th>
+        <th class = "title" scope="col">Store</th>
         <th class = "title" scope="col"> <div class="d-flex"><%= link_to "Revenue", :sort => "sale_amt"%> <p class="carrot">▽</p></div> </th>
       </tr>
     </thead>
@@ -71,6 +72,7 @@
           <th class="text-center" scope="row"><%= i %></th>
           <td class="text-center"> <%= sale.date.strftime("%b. %d, %Y") %></td>
           <td><%= link_to sale.product_type.title, product_type_sales_path(sale.product_type_id), class: "btn-simple" %></td>
+          <td><%= sale.store.capitalize %></td>
           <td>$<%= sale.sale_amt %>0</td>
         </tr>
       <% end %>

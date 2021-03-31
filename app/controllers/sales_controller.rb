@@ -46,9 +46,11 @@ class SalesController < ApplicationController
       if params[:filter] == "amazon"
         @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ? and store = ?", @date_range, "amazon").group_by_week(:date).sum(:sale_amt).to_a }
         @store = "Amazon"
+        @all_sales = Sale.order("date DESC").where("store = ?","amazon").limit(10)
       elsif params[:filter] == "etsy"
         @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ? and store = ?", @date_range, "etsy").group_by_week(:date).sum(:sale_amt).to_a }
         @store = "Etsy"
+        @all_sales = Sale.order("date DESC").where("store = ?","etsy").limit(10)
       else
         @stacked_data << { name: ptype.title, data: ptype.sales.where("date >= ?", @date_range).group_by_week(:date).sum(:sale_amt).to_a }
         @store = "All"
