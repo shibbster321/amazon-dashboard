@@ -17,6 +17,8 @@ class CsvConverter
       order_id = row ['amazon-order-id']
       title = row['product-name'].slice(0..20)
       new_sale = Sale.new({store: store, date: date, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt.round(2) })
+      puts new_sale
+      puts " "
       if Product.find_by(sku: new_sale.sku)
           product = Product.find_by(sku: new_sale.sku)
           new_sale.product_id = product.id
