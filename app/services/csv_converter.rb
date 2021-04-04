@@ -16,7 +16,10 @@ class CsvConverter
       sku = row['sku']
       order_id = row ['amazon-order-id']
       title = row['product-name'].slice(0..20)
+      puts title
+      puts sku
       new_sale = Sale.new({store: store, date: date, orderid: order_id, sku: sku, qty: qty, sale_amt: sale_amt.round(2) })
+      puts " "
       puts new_sale
       puts " "
       if Product.find_by(sku: new_sale.sku)
@@ -29,11 +32,12 @@ class CsvConverter
         product = Product.create({product_type_id: ptype.id, title: title, sku: new_sale.sku, asin: "unkown", color_size: "unkown"})
         new_sale.product_id = product.id
       end
-      puts new_sale
       if new_sale.save
         puts new_sale.sku + " sale saved"
       else
+        puts "-----------------------------------"
         puts "sale already exists or other error"
+        puts "------------------------------------"
       end
     end
     return "success"
