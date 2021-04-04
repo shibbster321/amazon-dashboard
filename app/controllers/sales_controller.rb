@@ -19,11 +19,11 @@ class SalesController < ApplicationController
         end
       end
     # set date range for charts
-    @date_range = @most_recent_date - 30.days
+    @date_range = @most_recent_date - 28.days
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 30.days
+      @date_range = @most_recent_date - 28.days
     end
 
     # data for sales by store
@@ -62,7 +62,7 @@ class SalesController < ApplicationController
   def subindex
     authorize Sale
     @most_recent_date = Sale.maximum('date')
-    @date_range = @most_recent_date - 30.days
+    @date_range = @most_recent_date - 28.days
 
     @product_type_sales_list = ProductType.where(id: Sale.distinct.pluck(:product_type_id)).order(title: :desc)
     @store_list = ["all", "amazon", "etsy"]
@@ -99,7 +99,7 @@ class SalesController < ApplicationController
     if params[:range] == "year"
       @date_range = @most_recent_date - 1.year
     elsif params[:range] == "month"
-      @date_range = @most_recent_date - 30.days
+      @date_range = @most_recent_date - 28.days
     end
   end
 
